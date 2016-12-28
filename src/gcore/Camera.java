@@ -10,6 +10,5 @@ public class Camera extends Object {
 		height=screenHeight;
 	}
 	
-	
 
 }
