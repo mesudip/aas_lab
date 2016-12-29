@@ -10,14 +10,15 @@ public class Object3d extends WorldObject {
 		
 	}
 	
-	public Object3d(Vector3d vertex_array[], int face_array[][]){
-		vertices=vertex_array;
-		faces=face_array;
+	public Object3d(Vector3d vertexArray[], int faceArray[][]){
+		vertices=vertexArray;
+		faces=faceArray;
 	}
 	
-	public Object3d(Vector3d vertex_array[],int face_array[][],int edge_array[][]){
-		vertices=vertex_array;
-		faces=face_array;
-		edges=edge_array;
+	public Object3d(Vector3d vertexArray[],int faceArray[][],int edgeArray[][]){
+		vertices=vertexArray;
+		faces=faceArray;
+		edges=edgeArray;
 	}
+	
 }
