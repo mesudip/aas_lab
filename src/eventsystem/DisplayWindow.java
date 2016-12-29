@@ -1,20 +1,37 @@
 package eventsystem;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.EventListener;
 
+import javax.swing.Timer;
 import javax.swing.JPanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
-public class DisplayWindow extends javax.swing.JFrame{
+/**
+ * @author sudip
+ * Date : Dec 29, 2016
+ * -->
+ * This is the window class where the vewports will be displayed.
+ * For initial easy test. There will be only one window. Only one 
+ * viewport. The window will have a timer that will trigger a event
+ * periodically, each trigger will cause the screen to be refreshed
+ * (ie. the rendering cycle will restart from beginning despite the fact
+ * that it previous output could be reused.)
+ * 
+ */
+public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 	int reshapeCount;
 	private static final long serialVersionUID = -1484538271370666054L;
 	javax.swing.JPanel drawPanel;
 	ViewPort mainViewPort;
 	
+	Timer timer;
 	@SuppressWarnings("serial")
-	public DisplayWindow() {
+	public DisplayWindow(int fps) {
 		
 		super("Output Window");
 		mainViewPort=new ViewPort(1000, 600);
@@ -34,11 +51,18 @@ public class DisplayWindow extends javax.swing.JFrame{
 		drawPanel.setVisible(true);
 		pack();
 		setVisible(true);
+		timer=new Timer(1000/fps, this);
 	}
 	static public void main(String args[]){
+		/*Create a window with screen refreshing at the rate of 10 fps*/
+		DisplayWindow window=new DisplayWindow(10);
 		
-		DisplayWindow window=new DisplayWindow();
 		
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		mainViewPort.repaint();
+		drawPanel.repaint();
 		
 	}
 

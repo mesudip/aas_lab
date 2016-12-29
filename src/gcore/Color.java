@@ -3,6 +3,7 @@ package gcore;
 public class Color extends Object {
 	
 	public int rgba;
+	
 	Color( int rgba){
 		this.rgba=rgba;
 	}
