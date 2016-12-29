@@ -10,4 +10,6 @@ public class RenderRegistry extends gcore.Object {
 	void registerTriangle(Triangle3d[] triangles){}
 	void registerQuad(Quad3d quad){}
 	void registerQuad(Quad3d[] quads){}
+	int registerVectorArray(){return 0;}
+	int registerColorArray(){return 0;}
 }
