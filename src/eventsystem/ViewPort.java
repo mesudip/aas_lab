@@ -1,9 +1,9 @@
 package eventsystem;
 import java.awt.image.BufferedImage;
-import java.beans.DefaultPersistenceDelegate;
 
 import gcore.Camera;
 import gcore.FrameBuffer;
+import rendercore.RenderManager;
 
 import java.awt.Color;
 
@@ -11,8 +11,18 @@ import java.awt.Color;
 /**
  * @author sudip
  * Date : Dec 29, 2016
- * 
+ * --> 
+ * I don't know why this class exists!
+ * This is simply seems not necessary when FrameBuffer
+ * classes (SingleBuffer and DoubleBuffer) will be made.
+ * But this class along with the DisplayWindow class
+ * will be helping to provide easier interface to javax.swing.*
+ * components.
+ * May be in future frameBuffer class might be too primitive and
+ * ViewPort will be build above the buffer classes for working more
+ * close to the native displaying interface.
  */
+
 public class ViewPort extends gcore.Object{
 
 	private int width,  height;
@@ -59,22 +69,19 @@ public class ViewPort extends gcore.Object{
 		this.height=height;
 		drawArea=new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 	}
+	public void repaint(){
+		ViewPort output=new ViewPort(width, height);
+		RenderManager.getDefaultManager().getrenderedOutput(output);
+		drawArea=output.drawArea;
+	}
 	public int getWidth() {
 		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
 	}
 
 	public int getHeight() {
 		return height;
 	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
+	
 	public gcore.Camera getCamera() {
 		return associatedCamera;
 	}
