@@ -44,17 +44,18 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		        g2.drawImage(viewPort.getDrawArea(), null, null);
 		    }
 		};
-		viewPort.drawPixel(100, 100,Color.BLUE);
-		drawPanel.setPreferredSize(new Dimension(1000,600));
 		drawPanel.setSize(new Dimension(1000,600));
+		drawPanel.setPreferredSize(new Dimension(1000,600));
 		getContentPane().add(drawPanel);
 		drawPanel.setVisible(true);
 		pack();
 		setVisible(true);
-		timer=new Timer(1000/fps, this);
+		//timer=new Timer(1000/fps, this);
 	}
 	static public void main(String args[]){
-		/*Create a window with screen refreshing at the rate of 10 fps*/
+		/* @author sudip
+		 * Create a window with screen refreshing at the rate of 10 fps
+		 */
 		DisplayWindow window=new DisplayWindow(10);
 		
 		

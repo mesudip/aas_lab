@@ -50,6 +50,7 @@ public class Transform extends Object {
 		 * But i think the default scale function should
 		 * be the one that scales the object about its own
 		 * center.
+		 * sad : the object's center is not part of transform class.
 		 */
 		float matrix[][]=new float[4][4];
 		matrix[1][1]=vector.x;
