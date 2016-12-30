@@ -1,4 +1,4 @@
-package gcore;
+package gcore;	
 
 /**
  * @author sudip
@@ -23,26 +23,178 @@ public class Transform extends Object {
 	}
 	/**
 	 * @author sudip
-	 * @deprecated Because it can be implemented in better way.
-	 * this function can be implemented without creating a new
-	 * matrix. we can copy paste the multiplication code and replace
-	 * the indices directly with values and there are lots of zeros 
-	 * :)
+	 * It uses the multiplication algorithm, but since there are lot of zeros, 
+	 * this is gonna be simpler and faster than making a new matrix and 
+	 * applying general multiplication algorithm,
 	 */
 	public void translate(Vector3d vector){
-
-		float matrix[][]=new float[4][4];
-		matrix[0][0]=matrix[1][1]=matrix[2][2]=matrix[3][3]=1;
-		matrix[0][1]=matrix[0][2]=matrix[1][0]=
-		matrix[1][2]=matrix[2][0]=matrix[2][1]=
-		matrix[3][0]=matrix[3][1]=matrix[3][2]=0;
-		matrix[0][3]=vector.x;
-		matrix[1][3]=vector.y;
-		matrix[2][3]=vector.z;
-		this.multiply(matrix);
+		matrix[0][3]=matrix[0][0]*vector.x+matrix[0][1]*vector.y+matrix[0][2]*vector.z+matrix[0][3];
+		matrix[1][3]=matrix[1][0]*vector.x+matrix[1][1]*vector.y+matrix[1][2]*vector.z+matrix[0][3];
+		matrix[2][3]=matrix[2][0]*vector.x+matrix[2][1]*vector.y+matrix[2][2]*vector.z+matrix[0][3];		
+	}
+	
+	
+	/**
+	 * @author sudip
+	 * @param initpoint start point for line
+	 * @param endpoint  end point for line.
+	 * -->
+	 * Well, start and end points are actually nto the determining factors.
+	 * what matters is what are the direction cosines of the line and the
+	 * line's distance from the object.
+	 * 
+	 */
+	public void rotate(Vector4d initpoint,Vector4d endpoint){
+		float a,b,c,r;
+		a=endpoint.x-initpoint.x;
+		b=endpoint.y-initpoint.y;
+		c=endpoint.z-initpoint.z;
+		r=a*a+b*b+c*c;
+		
+		Transform transform=new Transform();
+		transform.loadIdentity();
+		
+		/*I don't know how 3d general rotation would be!*/
+	}
+	/**
+	 * @author sudip
+	 * -->
+	 * Rotate Object about x axis.
+	 * @param angle Angle will be in degrees.
+	 * Should it be in radian for eliminating the conversion?
+	 * Well we can change it later if reqired.
+	 */
+	public void rotateX(double angle){
+		angle*=java.lang.Math.PI;
+		angle/=180;
+		float cos_t=(float)java.lang.Math.cos(angle);
+		float sin_t=(float)java.lang.Math.sin(angle);
+		float swap;
+		
+		swap=matrix[0][1]*sin_t;
+		matrix[0][1]*=cos_t;
+		matrix[0][1]-=matrix[0][2]*sin_t;
+		matrix[0][2]*=cos_t;
+		matrix[0][2]+=swap;
+		
+		swap=matrix[1][1]*sin_t;
+		matrix[1][1]*=cos_t;
+		matrix[1][1]-=matrix[0][2]*sin_t;
+		matrix[1][2]*=cos_t;
+		matrix[1][2]+=swap;
+		
+		swap=matrix[2][1]*sin_t;
+		matrix[2][1]*=cos_t;
+		matrix[2][1]-=matrix[0][2]*sin_t;
+		matrix[2][2]*=cos_t;
+		matrix[2][2]+=swap;
+		
+		swap=matrix[3][1]*sin_t;
+		matrix[3][1]*=cos_t;
+		matrix[3][1]-=matrix[0][2]*sin_t;
+		matrix[3][2]*=cos_t;
+		matrix[3][2]+=swap;
+	}
+	/**
+	 * @author sudip
+	 * -->
+	 * Rotate Object about y axis.
+	 */
+	public void rotateY(double angle){
+		angle*=java.lang.Math.PI;
+		angle/=180;
+		float cos_t=(float)java.lang.Math.cos(angle);
+		float sin_t=(float)java.lang.Math.sin(angle);
+		float swap;
+		
+		swap=matrix[0][0]*sin_t;
+		matrix[0][0]*=cos_t;
+		matrix[0][1]+=matrix[0][2]*sin_t;
+		matrix[0][2]*=cos_t;
+		matrix[0][2]-=swap;
+		
+		swap=matrix[1][0]*sin_t;
+		matrix[1][0]*=cos_t;
+		matrix[1][1]+=matrix[1][2]*sin_t;
+		matrix[1][2]*=cos_t;
+		matrix[1][2]-=swap;
+		
+		swap=matrix[2][0]*sin_t;
+		matrix[2][0]*=cos_t;
+		matrix[2][1]+=matrix[2][2]*sin_t;
+		matrix[2][2]*=cos_t;
+		matrix[2][2]-=swap;
+		
+		swap=matrix[0][0]*sin_t;
+		matrix[2][0]*=cos_t;
+		matrix[2][1]+=matrix[2][2]*sin_t;
+		matrix[2][2]*=cos_t;
+		matrix[2][2]-=swap;
+		
+				
+	}
+	/**
+	 * @author sudip
+	 * -->
+	 * Rotate Object about z axis.
+	 */
+	public void rotateZ(double angle){
+		angle*=java.lang.Math.PI;	
+		angle/=180;
+		float cos_t=(float)java.lang.Math.cos(angle);
+		float sin_t=(float)java.lang.Math.sin(angle);
+		float swap;
+		
+		swap=matrix[0][0]*sin_t;
+		matrix[0][0]*=cos_t;
+		matrix[0][1]-=matrix[0][11]*sin_t;
+		matrix[0][1]*=cos_t;
+		matrix[0][1]+=swap;
+		
+		swap=matrix[1][0]*sin_t;
+		matrix[1][0]*=cos_t;
+		matrix[1][1]-=matrix[1][1]*sin_t;
+		matrix[1][1]*=cos_t;
+		matrix[1][1]+=swap;
+		
+		swap=matrix[2][0]*sin_t;
+		matrix[2][0]*=cos_t;
+		matrix[2][1]-=matrix[2][1]*sin_t;
+		matrix[2][1]*=cos_t;
+		matrix[2][1]+=swap;
+		
+		swap=matrix[3][0]*sin_t;
+		matrix[3][0]*=cos_t;
+		matrix[3][1]-=matrix[3][1]*sin_t;
+		matrix[3][1]*=cos_t;
+		matrix[3][1]+=swap;
 		
 	}
-	public void rotate(){/*I don't know how 3d rotation works!*/}
+	
+	/**
+	 * @author sudip
+	 * -->
+	 * Reflection functions about planes 
+	 */
+	public void reflectYZ(){
+		matrix[0][0]=-matrix[0][0];
+		matrix[1][0]=-matrix[1][0];
+		matrix[2][0]=-matrix[2][0];
+		matrix[3][0]=-matrix[3][0];
+	}
+	public void reflectXZ(){
+		matrix[0][1]=-matrix[0][1];
+		matrix[1][1]=-matrix[1][1];
+		matrix[2][1]=-matrix[2][1];
+		matrix[3][1]=-matrix[3][1];
+	}
+	public void reflectXY(){
+		matrix[0][2]=-matrix[0][2];
+		matrix[1][2]=-matrix[1][2];
+		matrix[2][2]=-matrix[2][2];
+		matrix[3][2]=-matrix[3][2];
+	}
+
 	public void scale(Vector3d vector){
 		/* 
 		 * @author sudip
@@ -52,13 +204,17 @@ public class Transform extends Object {
 		 * center.
 		 * sad : the object's center is not part of transform class.
 		 */
-		float matrix[][]=new float[4][4];
-		matrix[1][1]=vector.x;
-		matrix[2][2]=vector.y;
-		matrix[3][3]=vector.z;
-		matrix[0][1]=matrix[0][2]=matrix[0][3]=matrix[1][0]=
-		matrix[1][2]=matrix[1][3]=matrix[2][0]=matrix[2][1]=
-		matrix[2][3]=matrix[3][0]=matrix[3][1]=matrix[3][2]=0;
+		matrix[0][0]*=vector.x;
+		matrix[0][1]*=vector.y;
+		matrix[0][2]*=vector.z;
+		
+		matrix[1][0]*=vector.x;
+		matrix[1][1]*=vector.y;
+		matrix[1][2]*=vector.z;
+		
+		matrix[2][0]*=vector.x;
+		matrix[2][1]*=vector.y;
+		matrix[2][2]*=vector.z;
 	}
 	
 	/**
@@ -155,80 +311,93 @@ public class Transform extends Object {
 	 * faster than the previous one.Otherwiise 
 	 * there is no need of this function.
 	 */
-	public void multiply(float matrix[][]){
+	public void multiply(float matrix2[][]){
 		
 		float swap1,swap2,swap3;
 		swap1=matrix[0][0];swap2=matrix[0][1];swap3=matrix[0][2];
-		matrix[0][0]=swap1*matrix[0][0]+
-				swap2*matrix[1][0]+
-				swap3*matrix[2][0]+
-				matrix[0][3]*matrix[3][0];
-		matrix[0][1]=swap1*matrix[0][1]+
-				swap2*matrix[1][1]+
-				swap3*matrix[2][1]+
+		matrix[0][0]=swap1*matrix2[0][0]+
+				swap2*matrix2[1][0]+
+				swap3*matrix2[2][0]+
+				matrix[0][3]*matrix2[3][0];
+		matrix[0][1]=swap1*matrix2[0][1]+
+				swap2*matrix2[1][1]+
+				swap3*matrix2[2][1]+
 				matrix[0][3]*matrix[3][1];
 		matrix[0][2]=swap1*matrix[0][2]+
-				swap2*matrix[1][2]+
-				swap3*matrix[2][2]+
-				matrix[0][3]*matrix[3][2];
-		matrix[0][3]=swap1*matrix[0][3]+
-				swap2*matrix[1][3]+
-				swap3*matrix[2][3]+
-				matrix[0][3]*matrix[3][3];
+				swap2*matrix2[1][2]+
+				swap3*matrix2[2][2]+
+				matrix[0][3]*matrix2[3][2];
+		matrix[0][3]=swap1*matrix2[0][3]+
+				swap2*matrix2[1][3]+
+				swap3*matrix2[2][3]+
+				matrix[0][3]*matrix2[3][3];
 		
 		swap1=matrix[1][0];swap2=matrix[1][1];swap3=matrix[1][2];
-		matrix[1][0]=swap1*matrix[0][0]+
-				swap2*matrix[1][0]+
-				swap3*matrix[2][0]+
-				matrix[1][3]*matrix[3][0];
-		matrix[1][1]=swap1*matrix[0][1]+
-				swap2*matrix[1][1]+
-				swap3*matrix[2][1]+
-				matrix[1][3]*matrix[3][1];
-		matrix[1][2]=swap1*matrix[0][2]+
-				swap2*matrix[1][2]+
-				swap3*matrix[2][2]+
-				matrix[1][3]*matrix[3][2];
-		matrix[1][3]=swap1*matrix[0][3]+
-				swap2*matrix[1][3]+
-				swap3*matrix[2][3]+
-				matrix[1][3]*matrix[3][3];
+		matrix[1][0]=swap1*matrix2[0][0]+
+				swap2*matrix2[1][0]+
+				swap3*matrix2[2][0]+
+				matrix[1][3]*matrix2[3][0];
+		matrix[1][1]=swap1*matrix2[0][1]+
+				swap2*matrix2[1][1]+
+				swap3*matrix2[2][1]+
+				matrix[1][3]*matrix2[3][1];
+		matrix[1][2]=swap1*matrix2[0][2]+
+				swap2*matrix2[1][2]+
+				swap3*matrix2[2][2]+
+				matrix[1][3]*matrix2[3][2];
+		matrix[1][3]=swap1*matrix2[0][3]+
+				swap2*matrix2[1][3]+
+				swap3*matrix2[2][3]+
+				matrix[1][3]*matrix2[3][3];
 		
 		swap1=matrix[2][0];swap2=matrix[2][1];swap3=matrix[2][2];
-		matrix[2][0]=swap1*matrix[0][0]+
-				swap2*matrix[1][0]+
-				swap3*matrix[2][0]+
-				matrix[2][3]*matrix[3][0];
-		matrix[2][1]=swap1*matrix[0][1]+
-				swap2*matrix[1][1]+
-				swap3*matrix[2][1]+
-				matrix[2][3]*matrix[3][1];
-		matrix[2][2]=swap1*matrix[0][2]+
-				swap2*matrix[1][2]+
-				swap3*matrix[2][2]+
-				matrix[2][3]*matrix[3][2];
-		matrix[2][3]=swap1*matrix[0][3]+
-				swap2*matrix[1][3]+
-				swap3*matrix[2][3]+
-				matrix[2][3]*matrix[3][3];
+		matrix[2][0]=swap1*matrix2[0][0]+
+				swap2*matrix2[1][0]+
+				swap3*matrix2[2][0]+
+				matrix[2][3]*matrix2[3][0];
+		matrix[2][1]=swap1*matrix2[0][1]+
+				swap2*matrix2[1][1]+
+				swap3*matrix2[2][1]+
+				matrix[2][3]*matrix2[3][1];
+		matrix[2][2]=swap1*matrix2[0][2]+
+				swap2*matrix2[1][2]+
+				swap3*matrix2[2][2]+
+				matrix[2][3]*matrix2[3][2];
+		matrix[2][3]=swap1*matrix2[0][3]+
+				swap2*matrix2[1][3]+
+				swap3*matrix2[2][3]+
+				matrix[2][3]*matrix2[3][3];
 		
 		swap1=matrix[3][0];swap2=matrix[3][1];swap3=matrix[3][2];
-		matrix[3][0]=swap1*matrix[0][0]+
-				swap2*matrix[1][0]+
-				swap3*matrix[2][0]+
-				matrix[3][3]*matrix[3][0];
-		matrix[3][1]=swap1*matrix[0][1]+
-				swap2*matrix[1][1]+
-				swap3*matrix[2][1]+
-				matrix[3][3]*matrix[3][1];
-		matrix[3][2]=swap1*matrix[0][2]+
-				swap2*matrix[1][2]+
-				swap3*matrix[2][2]+
-				matrix[3][3]*matrix[3][2];
-		matrix[3][3]=swap1*matrix[0][3]+
-				swap2*matrix[1][3]+
-				swap3*matrix[2][3]+
-				matrix[3][3]*matrix[3][3];
+		matrix[3][0]=swap1*matrix2[0][0]+
+				swap2*matrix2[1][0]+
+				swap3*matrix2[2][0]+
+				matrix[3][3]*matrix2[3][0];
+		matrix[3][1]=swap1*matrix2[0][1]+
+				swap2*matrix2[1][1]+
+				swap3*matrix2[2][1]+
+				matrix[3][3]*matrix2[3][1];
+		matrix[3][2]=swap1*matrix2[0][2]+
+				swap2*matrix2[1][2]+
+				swap3*matrix2[2][2]+
+				matrix[3][3]*matrix2[3][2];
+		matrix[3][3]=swap1*matrix2[0][3]+
+				swap2*matrix2[1][3]+
+				swap3*matrix2[2][3]+
+				matrix[3][3]*matrix2[3][3];	
+	}
+	/**
+	 * @author sudip
+	 * @param list list(java.util.List) of vertices.
+	 *  @see rendercore.RenderReistry.useTransform()
+	 */
+	public void applyOn(java.util.List<Vector4d> list){
+		for (Vector4d vector : list) {
+			vector.x=matrix[0][0]*vector.x+matrix[0][1]*vector.y+matrix[0][2]*vector.z+matrix[0][3]*vector.w;
+			vector.x=matrix[1][0]*vector.x+matrix[1][1]*vector.y+matrix[1][2]*vector.z+matrix[1][3]*vector.w;
+			vector.x=matrix[2][0]*vector.x+matrix[2][1]*vector.y+matrix[2][2]*vector.z+matrix[2][3]*vector.w;
+			vector.x=matrix[3][0]*vector.x+matrix[3][1]*vector.y+matrix[3][2]*vector.z+matrix[3][3]*vector.w;		
+		}
 		
 		
 	}
