@@ -14,14 +14,17 @@ import gcore.WorldObject;
  * -->
  * Cube class will be for demonstration how a composite object would look like,
  * how it registers itself to the rendering system and how it draws itself.
+ * -->Work is currently incomplete
  */
 public class Cube extends WorldObject {
 	/**
 	 * @author sudip
+	 * 
 	 * Why is this array static and final?
 	 * Well i am hoping that each cube in the world can be represented with
 	 * same vertex data but different transform component.
 	 * If this theory doesn't work, it will be made a instance member not the class member.
+	 * 
 	 */
 	private static final Vector4d[] vertices=new Vector4d[]{
 		new Vector4d(1,1,1),

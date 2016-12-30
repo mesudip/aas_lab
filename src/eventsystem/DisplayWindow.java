@@ -8,6 +8,9 @@ import java.util.EventListener;
 
 import javax.swing.Timer;
 
+import com.sun.javafx.sg.prism.web.NGWebView;
+
+import gprimitive.Line3d;
 import rendercore.RenderManager;
 import rendercore.RenderRegistry;
 
@@ -72,10 +75,11 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		 * There is error is the line drawing algorithm
 		 * for decreasing x or y.
 		 */
-		new gprimitive.Line3d(5, 5, 0, 200, 300, 0);
-		new gprimitive.Line3d(5, 5, 0, 300, 200, 0);
+		new Line3d(1, 1, 0, 400, 400, 0);
+		new Line3d(400, 400, 0, 700, 0, 0);
 		window.startRendering(10);/*Start rendering at the rate of 10fps*/
-		
+		/* fps calculation is not realtime.
+		 * */
 	}
 	public void startRendering(int fps){
 		timer=new Timer(1000/fps, this);
@@ -90,7 +94,6 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		}
 		mainViewPort.repaint();
 		drawPanel.repaint();
-		
 	}
 
 }
