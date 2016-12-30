@@ -66,6 +66,11 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		new RenderRegistry();
 		new RenderManager();
 		/*
+		 * @author sudip.
+		 * currently inverting the start and end points
+		 * of following line is not working.
+		 * There is error is the line drawing algorithm
+		 * for decreasing x or y.
 		 */
 		new gprimitive.Line3d(5, 5, 0, 200, 300, 0);
 		new gprimitive.Line3d(5, 5, 0, 300, 200, 0);
