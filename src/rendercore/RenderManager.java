@@ -1,4 +1,7 @@
 package rendercore;
+import java.sql.Time;
+import java.util.Timer;
+
 import eventsystem.ViewPort;
 import gcore.Object;
 import gcore.Object3d;
@@ -13,7 +16,7 @@ import gcore.Object3d;
 public class RenderManager extends Object {
 	private static RenderManager defaultManager;
 	private static final PrimitiveRenderer renderer=new PrimitiveRenderer(); 
-	
+	int frameNo=0;
 	public static RenderManager getDefaultManager(){
 		return defaultManager;
 	}
@@ -21,6 +24,9 @@ public class RenderManager extends Object {
 		RenderManager.defaultManager=this;
 	}
 	public void getrenderedOutput(ViewPort requestSender){
+		System.out.println("RenderManager Frame["+String.valueOf(frameNo)+"] : Rendering Started");
+		System.out.flush();
+		long time=System.currentTimeMillis();
 		RenderRegistry.getDefaultRegistor().rebuildArrays();
 		//stage 1: Request all objects to register their drawing ways;
 		for(Object3d object:Object3d.getObjectlist()){
@@ -31,11 +37,11 @@ public class RenderManager extends Object {
 		// thest steps will be skipped for this time.
 		
 		//last stage: draw the objects;
-		System.err.println("RenderManager : Starting final rendering process");
-		System.err.flush();
+		time=System.currentTimeMillis()-time;
+		
 		RenderManager.renderer.renderLine(requestSender);
-		System.err.println("RenderManager : Rendering Process complete");
-		System.err.flush();
+		System.out.println("RenderManager Frame["+String.valueOf(frameNo++)+"] : Render Complete in ["+String.valueOf(time)+"] ms");
+		System.out.flush();
 			
 	}
 }

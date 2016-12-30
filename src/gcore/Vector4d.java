@@ -11,4 +11,10 @@ public class Vector4d {
 		this.z=z;
 		this.w=w;
 	}
+	public Vector4d(float x,float y,float z){
+		this.x=x;
+		this.y=y;
+		this.z=z;
+		this.w=1;
+	}
 }

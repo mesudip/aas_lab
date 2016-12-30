@@ -1,9 +1,15 @@
 package rendercore;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
+
 import gcore.Object3d;
+import gcore.Transform;
+import gcore.Vector4d;
 import gprimitive.*;
 
 /**
@@ -11,7 +17,7 @@ import gprimitive.*;
  * Date : Dec 29, 2016
  * -->
  * This class will be the registry point.
- * All objects will register themselves for rendering in their constructor.
+ * All objects will give hint about their memory use
  * Then in the draw() function of Drawable Objects, they will register
  * all the primitive types like the vertices, edges, faces, textures, etc.
  */
@@ -43,12 +49,19 @@ import gprimitive.*;
 	public void registerLine(Line3d[] line){}
 	public int registerLine(int[] vector){
 		int size=lineList.size();
-		lineList.ensureCapacity(size+vector.length);
 		for(int i:vector){
 			lineList.add(i);
 		}		
 		return size; 
 		//vertexList.addAll(spentVertexCount,Arrays.asList(vector));
+	}
+	public int registerLine(int offset,int[] vector){
+		int size=lineList.size();
+		
+		for( int i:vector){
+			lineList.add(i+offset);
+		}
+		return size;
 	}
 	public int registerLine(int start,int end){
 		int size=lineList.size();
@@ -56,7 +69,7 @@ import gprimitive.*;
 		lineList.add(end);
 		return size;
 	}
-	public int registerVertex(gcore.Vector4d[] vector){
+	public int registerVector(gcore.Vector4d[] vector){
 		int size=vertexList.size();
 		vertexList.ensureCapacity(vertexList.size()+vector.length);
 		vertexList.addAll(Arrays.asList(vector));
@@ -66,6 +79,12 @@ import gprimitive.*;
 		vertexList=new ArrayList<>(vertexCountHint);
 		lineList=new ArrayList<>(lineCountHint);
 	}
+	public java.util.List <Vector4d> getVectorList(int start,int count){
+		return vertexList.subList(start, start+count); 
+	}
+	public void useTransform(int start,int count,gcore.Transform transform){
+		transform.applyOn(vertexList.subList(start, start+count));
+	}
 	public void registerTriangle(Triangle3d triangle){}
 	public void registerTriangle(Triangle3d[] triangles){}
 	public void registerQuad(Quad3d quad){}
@@ -74,6 +93,9 @@ import gprimitive.*;
 	public int registerColorArray(){return 0;}
 	public void addVertexCountHint(int count){
 		vertexCountHint+=count;
+	}
+	public void addLineCountHint(int count){
+		lineCountHint+=count;
 	}
 	public static RenderRegistry getDefaultRegistor(){
 		return RenderRegistry.defaultRegistor;
