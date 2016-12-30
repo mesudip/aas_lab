@@ -7,8 +7,8 @@ import java.util.Set;
 
 public class Object3d extends WorldObject implements Drawable{
 	private rendercore.RenderStage renderStage=RenderStage.Wireframe;
-	private static final Set<Drawable> objectList=new java.util.HashSet<>();
-	final public static Set<Drawable> getObjectlist() {
+	private static final Set<Object3d> objectList=new java.util.HashSet<>();
+	final public static Set<Object3d> getObjectlist() {
 		return  objectList;
 	}
 	Vector3d vertices[];

@@ -29,30 +29,38 @@ import gprimitive.*;
 	ArrayList<gcore.Vector4d> getVertex(){
 		return vertexList;
 	}
-	private static RenderRegistry defaulRegistor;
+	private static RenderRegistry defaultRegistor;
 	public RenderRegistry() {
 		/* @author sudip
 		 * This is initial implementation
 		 * We will have only one registor for initial build
 		 * */
-		RenderRegistry.defaulRegistor=this;
+		RenderRegistry.defaultRegistor=this;
 	}
 	public void registerPoint(Point3d point){}
 	public void registerPoint(Point3d[] points){}
 	public void registerLine(Line3d line){}
 	public void registerLine(Line3d[] line){}
-	public void registerLine(int[] vector){
-		lineList.ensureCapacity(lineList.size()+vector.length);
+	public int registerLine(int[] vector){
+		int size=lineList.size();
+		lineList.ensureCapacity(size+vector.length);
 		for(int i:vector){
 			lineList.add(i);
-		}
-		
-		
+		}		
+		return size; 
 		//vertexList.addAll(spentVertexCount,Arrays.asList(vector));
 	}
-	public void registerVertex(gcore.Vector4d[] vector){
+	public int registerLine(int start,int end){
+		int size=lineList.size();
+		lineList.add(start);
+		lineList.add(end);
+		return size;
+	}
+	public int registerVertex(gcore.Vector4d[] vector){
+		int size=vertexList.size();
 		vertexList.ensureCapacity(vertexList.size()+vector.length);
 		vertexList.addAll(Arrays.asList(vector));
+		return size;
 	}
 	public void rebuildArrays(){
 		vertexList=new ArrayList<>(vertexCountHint);
@@ -68,7 +76,7 @@ import gprimitive.*;
 		vertexCountHint+=count;
 	}
 	public static RenderRegistry getDefaultRegistor(){
-		return RenderRegistry.defaulRegistor;
+		return RenderRegistry.defaultRegistor;
 	}
 }
  

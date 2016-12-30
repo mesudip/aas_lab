@@ -58,10 +58,12 @@ public class ViewPort extends gcore.Object{
         }
 	}
 	public void drawPixel(int x,int y,Color color){
-		drawArea.setRGB(x, y, color.getRGB());
+		if(x>0&&y>0&&x<width&&y<height)
+		drawArea.setRGB(x,height-y, color.getRGB());
 	}
 	public void drawPixel(int x, int y){
-		drawArea.setRGB(x,y,Color.BLACK.getRGB());
+		if(x>0&&y>0&&x<width&&y<height)
+		drawArea.setRGB(x,height-y,Color.BLACK.getRGB());
 	}
 	
 	public void resize(int width,int height){
@@ -81,12 +83,9 @@ public class ViewPort extends gcore.Object{
 	public int getHeight() {
 		return height;
 	}
-	
 	public gcore.Camera getCamera() {
 		return associatedCamera;
 	}
 	
-
-
 }
 

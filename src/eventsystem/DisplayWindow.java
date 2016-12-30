@@ -7,6 +7,11 @@ import java.awt.image.BufferedImage;
 import java.util.EventListener;
 
 import javax.swing.Timer;
+
+import rendercore.RenderManager;
+import rendercore.RenderRegistry;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import java.awt.Color;
@@ -31,7 +36,7 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 	
 	Timer timer;
 	@SuppressWarnings("serial")
-	public DisplayWindow(int fps) {
+	public DisplayWindow() {
 		
 		super("Output Window");
 		mainViewPort=new ViewPort(1000, 600);
@@ -50,21 +55,38 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		drawPanel.setVisible(true);
 		pack();
 		setVisible(true);
-		//timer=new Timer(1000/fps, this);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	static public void main(String args[]){
 		/* @author sudip
-		 * Create a window with screen refreshing at the rate of 10 fps
+		 * Create a window
 		 */
-		DisplayWindow window=new DisplayWindow(10);
+		DisplayWindow window=new DisplayWindow();
 		
+		new RenderRegistry();
+		new RenderManager();
+		/*
+		 */
+		new gprimitive.Line3d(5, 5, 0, 200, 300, 0);
+		new gprimitive.Line3d(5, 5, 0, 300, 200, 0);
+		window.startRendering(10);/*Start rendering at the rate of 10fps*/
 		
+	}
+	public void startRendering(int fps){
+		timer=new Timer(1000/fps, this);
+		timer.start();
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()!=timer){
+		System.err.println("Somebody else is interfering");
+		System.err.flush();
+		return;
+		}
 		mainViewPort.repaint();
 		drawPanel.repaint();
 		
 	}
 
 }
+	
