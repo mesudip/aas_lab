@@ -54,7 +54,7 @@ public class Cube extends WorldObject {
 	public void Draw(){
 		rendercore.RenderRegistry registry=rendercore.RenderRegistry.getDefaultRegistor();
 		int start=registry.registerVector(vertices);
-		registry.registerLine(start,edges);
+		registry.drawLine(start,edges);
 		
 		
 	}

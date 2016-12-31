@@ -27,6 +27,6 @@ public class Line3d extends Object3d {
 	public void draw(){
 		RenderRegistry registor=RenderRegistry.getDefaultRegistor();
 		int vertexStart=registor.registerVector(vertices);
-		registor.registerLine(vertexStart,vertexStart+1);
+		registor.drawLine(vertexStart,vertexStart+1);
 	}
 }
