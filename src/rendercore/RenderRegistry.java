@@ -43,11 +43,10 @@ import gprimitive.*;
 		 * */
 		RenderRegistry.defaultRegistor=this;
 	}
-	public void registerPoint(Point3d point){}
-	public void registerPoint(Point3d[] points){}
-	public void registerLine(Line3d line){}
-	public void registerLine(Line3d[] line){}
-	public int registerLine(int[] vector){
+	public void drawPoint(Point3d point){}
+	public void drawPoint(Point3d[] points){}
+	public void drawLine(Line3d[] line){}
+	public int drawLine(int[] vector){
 		int size=lineList.size();
 		for(int i:vector){
 			lineList.add(i);
@@ -55,7 +54,7 @@ import gprimitive.*;
 		return size; 
 		//vertexList.addAll(spentVertexCount,Arrays.asList(vector));
 	}
-	public int registerLine(int offset,int[] vector){
+	public int drawLine(int offset,int[] vector){
 		int size=lineList.size();
 		
 		for( int i:vector){
@@ -63,7 +62,7 @@ import gprimitive.*;
 		}
 		return size;
 	}
-	public int registerLine(int start,int end){
+	public int drawLine(int start,int end){
 		int size=lineList.size();
 		lineList.add(start);
 		lineList.add(end);
@@ -85,11 +84,11 @@ import gprimitive.*;
 	public void useTransform(int start,int count,gcore.Transform transform){
 		transform.applyOn(vertexList.subList(start, start+count));
 	}
-	public void registerTriangle(Triangle3d triangle){}
-	public void registerTriangle(Triangle3d[] triangles){}
-	public void registerQuad(Quad3d quad){}
-	public void registerQuad(Quad3d[] quads){}
-	public int registerVectorArray(){return 0;}
+	public void drawTriangle(Triangle3d triangle){}
+	public void drawTriangle(Triangle3d[] triangles){}
+	public void drawQuad(Quad3d quad){}
+	public void drawQuad(Quad3d[] quads){}
+	public int drawVectorArray(){return 0;}
 	public int registerColorArray(){return 0;}
 	public void addVertexCountHint(int count){
 		vertexCountHint+=count;
