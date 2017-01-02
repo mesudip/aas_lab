@@ -10,4 +10,8 @@ public class Color extends Object {
 	Color(int r, int g, int b, int a){
 		r=r<<24+g<<16+b<<8+a;
 	}
+	int getRgba(){
+		return rgba;
+	}
+	
 }

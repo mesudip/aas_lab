@@ -1,0 +1,13 @@
+apply plugin :'application'
+
+mainClassName="eventsystem.DisplayWindow"
+
+repositories{
+
+}
+dependencies{
+
+}
+task getSword << {
+    println "It's very complicated here. Take this."
+}

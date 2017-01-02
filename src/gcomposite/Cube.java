@@ -1,9 +1,6 @@
 package gcomposite;
 
 import java.util.ArrayList;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import gcore.Vector4d;
 import gcore.WorldObject;
 

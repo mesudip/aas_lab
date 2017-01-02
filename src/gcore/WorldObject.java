@@ -1,12 +1,14 @@
 package gcore;
 
-public class WorldObject extends Object {
-	public Transform transform;
+public class WorldObject extends Object{
 	
+	public Transform transform;
+	protected void applyTransforms(){
+		
+	}
 	public WorldObject(){
-		super();
+		
 		transform=new Transform();
 		transform.loadIdentity();
-	}
-	
+	}	
 }

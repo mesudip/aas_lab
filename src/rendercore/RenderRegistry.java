@@ -4,9 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
-
 import gcore.Object3d;
 import gcore.Transform;
 import gcore.Vector4d;
