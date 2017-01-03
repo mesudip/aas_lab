@@ -41,8 +41,14 @@ public class Object3d extends WorldObject implements Drawable{
 	public void draw(){
 		/* TODO add some functionality here*/
 	}
-	protected final void addVertex(Vector4d[] vector){
-		currentWorld.getRegistry().registerVector(vector);
+	protected final int addVertex(Vector4d[] vector){
+		return currentWorld.getRegistry().registerVector(vector);
+	}
+	protected final void setVertexHint(int count){
+		currentWorld.getRegistry().addVertexCountHint(count);
+	}
+	protected final void setLineHint(int count){
+		currentWorld.getRegistry().addLineCountHint(count);
 	}
 	protected final List<Vector4d> getVertexList(int offset, int count){
 		return currentWorld.getRegistry().getVectorList(offset, count);

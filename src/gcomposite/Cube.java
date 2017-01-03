@@ -13,7 +13,7 @@ import gcore.WorldObject;
  * how it registers itself to the rendering system and how it draws itself.
  * -->Work is currently incomplete
  */
-public class Cube extends WorldObject {
+public class Cube extends gcore.Object3d {
 	/**
 	 * @author sudip
 	 * 
@@ -45,15 +45,12 @@ public class Cube extends WorldObject {
 		6,4,4,5,5,7,7,6	};
 	public Cube(){
 		transform.loadIdentity();
-		rendercore.RenderRegistry.getDefaultRegistor().addVertexCountHint(8);
-		rendercore.RenderRegistry.getDefaultRegistor().addLineCountHint(12);
+		setVertexHint(8);
+		setLineHint(12);
 	}
 	public void Draw(){
-		rendercore.RenderRegistry registry=rendercore.RenderRegistry.getDefaultRegistor();
-		int start=registry.registerVector(vertices);
-		registry.drawLine(start,edges);
 		
-		
+		drawLine(addVertex(vertices), edges);
 	}
 
 }

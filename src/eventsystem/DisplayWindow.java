@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
+
+import gcore.World;
 import gprimitive.Line3d;
 import rendercore.RenderManager;
 import rendercore.RenderRegistry;
@@ -55,16 +57,9 @@ public class DisplayWindow extends javax.swing.JFrame implements ActionListener{
 		 * Create a window
 		 */
 		DisplayWindow window=new DisplayWindow();
-		
-		new RenderRegistry();
-		new RenderManager();
-		/*
-		 * @author sudip.
-		 * currently inverting the start and end points
-		 * of following line is not working.
-		 * There is error is the line drawing algorithm
-		 * for decreasing x or y.
-		 */
+		//Create a new world. Where could the object be without a world!
+		new World();
+		//This new world will be the active world
 		new Line3d(1, 1, 0, 400, 400, 0);
 		new Line3d(400, 400, 0, 700, 0, 0);
 		window.startRendering(10);/*Start rendering at the rate of 10fps*/

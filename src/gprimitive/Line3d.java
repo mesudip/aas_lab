@@ -11,6 +11,7 @@ import rendercore.RenderRegistry;
  * transform object in Line3d. This will just take space.
  * And Line is supposed to be a simple primitive type.
  * So it should be small as possible and fast.
+ * Make an array Of lines and stillget things to be accessed fast.
  */
 public class Line3d extends Object3d {
 	Vector4d vertices[];
@@ -19,14 +20,16 @@ public class Line3d extends Object3d {
 		this.vertices=new Vector4d[2];
 		vertices[0]=new Vector4d(x1,y1,z1,1);
 		vertices[1]=new Vector4d(x2,y2,z2,1);
-		rendercore.RenderRegistry.getDefaultRegistor().addVertexCountHint(2);
+		setVertexHint(2);
+		setLineHint(1);
 		
 		// TODO Auto-generated constructor stub
 	}
 	@Override
 	public void draw(){
-		RenderRegistry registor=RenderRegistry.getDefaultRegistor();
-		int vertexStart=registor.registerVector(vertices);
-		registor.drawLine(vertexStart,vertexStart+1);
+		int vertexStart=addVertex(vertices);
+		drawLine(vertexStart,vertexStart+1);
 	}
+	
 }
+		

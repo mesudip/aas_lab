@@ -19,7 +19,10 @@ public class World extends Object {
 	private ArrayList<gcore.Object> objectList=new ArrayList<>();
 	private rendercore.RenderManager manager =new RenderManager();
 	private rendercore.RenderRegistry register=new RenderRegistry();
-	World(){
+	public static final void setActiveWorld(World world){
+		currentWorld=world;
+	}
+	public World(){
 		currentWorld=this;
 	}
 	public final ArrayList<gcore.Object> getObjects(){
