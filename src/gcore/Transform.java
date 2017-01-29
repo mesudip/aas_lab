@@ -1,405 +1,416 @@
-package gcore;	
+package gcore;
+import java.util.List;
 
-/**
- * @author sudip
- * Date : Dec 29, 2016
- * Well this class contains the transformation matrix and has functions for
- * some default operations.
- * Each transformable object will have a Transform as a member.
- * That transform will be applied as a Molelling Transformation.
- */
-public class Transform extends Object {
-	public enum Type{Transform,Rotation,Scale,Shear};
-	static final Transform Identity=new Transform();
-	private float matrix[][];
-	Transform(){
-		matrix=new float[4][4];
+import javafx.scene.SceneAntialiasing;
+
+public class Transform {
+	//this is the position of the object;
+	float x,y,z;
+	float[] matrix=new float[16];
+	
+	public void translate(float x, float y){
+		matrix[0]+=matrix[12]*x;
+		matrix[1]+=matrix[13]*x;
+		matrix[2]+=matrix[14]*x;
+		matrix[3]+=matrix[15]*x;
+		
+		matrix[4]+=matrix[12]*y;
+		matrix[5]+=matrix[13]*y;
+		matrix[6]+=matrix[14]*y;
+		matrix[7]+=matrix[15]*y;
+	}
+	public void translate(float x,float y,float z){
+		matrix[0]+=matrix[12]*x;
+		matrix[1]+=matrix[13]*x;
+		matrix[2]+=matrix[14]*x;
+		matrix[3]+=matrix[15]*x;
+		
+		matrix[4]+=matrix[12]*y;
+		matrix[5]+=matrix[13]*y;
+		matrix[6]+=matrix[14]*y;
+		matrix[7]+=matrix[15]*y;
+		
+		matrix[8]+=matrix[12]*z;
+		matrix[9]+=matrix[13]*z;
+		matrix[10]+=matrix[14]*z;
+		matrix[11]+=matrix[15]*z;
+		
 	}
 	public void loadIdentity(){
-		matrix[0][0]=matrix[1][1]=matrix[2][2]=matrix[3][3]=1;
-		matrix[0][1]=matrix[0][2]=matrix[0][3]=matrix[1][0]=
-		matrix[1][2]=matrix[1][3]=matrix[2][0]=matrix[2][1]=
-		matrix[2][3]=matrix[3][0]=matrix[3][1]=matrix[3][2]=0;
+		matrix[0]=1;  matrix[1]=0;  matrix[2]=0;   matrix[3]=0;
+		matrix[4]=0;  matrix[5]=1;  matrix[6]=0;   matrix[7]=0;
+		matrix[8]=0;  matrix[9]=0;  matrix[10]=1;  matrix[11]=0;
+		matrix[12]=0; matrix[13]=0; matrix[14]=0;  matrix[15]=1;
 	}
-	/**
-	 * @author sudip
-	 * It uses the multiplication algorithm, but since there are lot of zeros, 
-	 * this is gonna be simpler and faster than making a new matrix and 
-	 * applying general multiplication algorithm,
-	 */
-	public void translate(Vector3d vector){
-		matrix[0][3]=matrix[0][0]*vector.x+matrix[0][1]*vector.y+matrix[0][2]*vector.z+matrix[0][3];
-		matrix[1][3]=matrix[1][0]*vector.x+matrix[1][1]*vector.y+matrix[1][2]*vector.z+matrix[0][3];
-		matrix[2][3]=matrix[2][0]*vector.x+matrix[2][1]*vector.y+matrix[2][2]*vector.z+matrix[0][3];		
-	}
-	
-	
-	/**
-	 * @author sudip
-	 * @param initpoint start point for line
-	 * @param endpoint  end point for line.
-	 * -->
-	 * Well, start and end points are actually nto the determining factors.
-	 * what matters is what are the direction cosines of the line and the
-	 * line's distance from the object.
-	 * 
-	 */
-	public void rotate(Vector4d initpoint,Vector4d endpoint){
-		float a,b,c,r;
-		a=endpoint.x-initpoint.x;
-		b=endpoint.y-initpoint.y;
-		c=endpoint.z-initpoint.z;
-		r=a*a+b*b+c*c;
-		
-		Transform transform=new Transform();
-		transform.loadIdentity();
-		
-		/*I don't know how 3d general rotation would be!*/
-	}
-	/**
-	 * @author sudip
-	 * -->
-	 * Rotate Object about x axis.
-	 * @param angle Angle will be in degrees.
-	 * Should it be in radian for eliminating the conversion?
-	 * Well we can change it later if reqired.
-	 */
-	public void rotateX(double angle){
-		angle*=java.lang.Math.PI;
-		angle/=180;
-		float cos_t=(float)java.lang.Math.cos(angle);
-		float sin_t=(float)java.lang.Math.sin(angle);
-		float swap;
-		
-		swap=matrix[0][1]*sin_t;
-		matrix[0][1]*=cos_t;
-		matrix[0][1]-=matrix[0][2]*sin_t;
-		matrix[0][2]*=cos_t;
-		matrix[0][2]+=swap;
-		
-		swap=matrix[1][1]*sin_t;
-		matrix[1][1]*=cos_t;
-		matrix[1][1]-=matrix[0][2]*sin_t;
-		matrix[1][2]*=cos_t;
-		matrix[1][2]+=swap;
-		
-		swap=matrix[2][1]*sin_t;
-		matrix[2][1]*=cos_t;
-		matrix[2][1]-=matrix[0][2]*sin_t;
-		matrix[2][2]*=cos_t;
-		matrix[2][2]+=swap;
-		
-		swap=matrix[3][1]*sin_t;
-		matrix[3][1]*=cos_t;
-		matrix[3][1]-=matrix[0][2]*sin_t;
-		matrix[3][2]*=cos_t;
-		matrix[3][2]+=swap;
-	}
-	/**
-	 * @author sudip
-	 * -->
-	 * Rotate Object about y axis.
-	 */
-	public void rotateY(double angle){
-		angle*=java.lang.Math.PI;
-		angle/=180;
-		float cos_t=(float)java.lang.Math.cos(angle);
-		float sin_t=(float)java.lang.Math.sin(angle);
-		float swap;
-		
-		swap=matrix[0][0]*sin_t;
-		matrix[0][0]*=cos_t;
-		matrix[0][1]+=matrix[0][2]*sin_t;
-		matrix[0][2]*=cos_t;
-		matrix[0][2]-=swap;
-		
-		swap=matrix[1][0]*sin_t;
-		matrix[1][0]*=cos_t;
-		matrix[1][1]+=matrix[1][2]*sin_t;
-		matrix[1][2]*=cos_t;
-		matrix[1][2]-=swap;
-		
-		swap=matrix[2][0]*sin_t;
-		matrix[2][0]*=cos_t;
-		matrix[2][1]+=matrix[2][2]*sin_t;
-		matrix[2][2]*=cos_t;
-		matrix[2][2]-=swap;
-		
-		swap=matrix[0][0]*sin_t;
-		matrix[2][0]*=cos_t;
-		matrix[2][1]+=matrix[2][2]*sin_t;
-		matrix[2][2]*=cos_t;
-		matrix[2][2]-=swap;
-		
-				
-	}
-	/**
-	 * @author sudip
-	 * -->
-	 * Rotate Object about z axis.
-	 */
-	public void rotateZ(double angle){
-		angle*=java.lang.Math.PI;	
-		angle/=180;
-		float cos_t=(float)java.lang.Math.cos(angle);
-		float sin_t=(float)java.lang.Math.sin(angle);
-		float swap;
-		
-		swap=matrix[0][0]*sin_t;
-		matrix[0][0]*=cos_t;
-		matrix[0][1]-=matrix[0][11]*sin_t;
-		matrix[0][1]*=cos_t;
-		matrix[0][1]+=swap;
-		
-		swap=matrix[1][0]*sin_t;
-		matrix[1][0]*=cos_t;
-		matrix[1][1]-=matrix[1][1]*sin_t;
-		matrix[1][1]*=cos_t;
-		matrix[1][1]+=swap;
-		
-		swap=matrix[2][0]*sin_t;
-		matrix[2][0]*=cos_t;
-		matrix[2][1]-=matrix[2][1]*sin_t;
-		matrix[2][1]*=cos_t;
-		matrix[2][1]+=swap;
-		
-		swap=matrix[3][0]*sin_t;
-		matrix[3][0]*=cos_t;
-		matrix[3][1]-=matrix[3][1]*sin_t;
-		matrix[3][1]*=cos_t;
-		matrix[3][1]+=swap;
-		
-	}
-	
-	/**
-	 * @author sudip
-	 * -->
-	 * Reflection functions about planes 
-	 */
-	public void reflectYZ(){
-		matrix[0][0]=-matrix[0][0];
-		matrix[1][0]=-matrix[1][0];
-		matrix[2][0]=-matrix[2][0];
-		matrix[3][0]=-matrix[3][0];
-	}
-	public void reflectXZ(){
-		matrix[0][1]=-matrix[0][1];
-		matrix[1][1]=-matrix[1][1];
-		matrix[2][1]=-matrix[2][1];
-		matrix[3][1]=-matrix[3][1];
-	}
-	public void reflectXY(){
-		matrix[0][2]=-matrix[0][2];
-		matrix[1][2]=-matrix[1][2];
-		matrix[2][2]=-matrix[2][2];
-		matrix[3][2]=-matrix[3][2];
-	}
-
-	public void scale(Vector3d vector){
-		/* 
-		 * @author sudip
-		 * Implementation for scaling about origin.
-		 * But i think the default scale function should
-		 * be the one that scales the object about its own
-		 * center.
-		 * sad : the object's center is not part of transform class.
-		 */
-		matrix[0][0]*=vector.x;
-		matrix[0][1]*=vector.y;
-		matrix[0][2]*=vector.z;
-		
-		matrix[1][0]*=vector.x;
-		matrix[1][1]*=vector.y;
-		matrix[1][2]*=vector.z;
-		
-		matrix[2][0]*=vector.x;
-		matrix[2][1]*=vector.y;
-		matrix[2][2]*=vector.z;
-	}
-	
-	/**
-	 * @author sudip
-	 * @param transform is the transformation matrix which is to be multiplied to original one.
-	 * Trying to make it faster with lesser memory consumption
-	 * Because this function is going to be called hell lot of times
-	 * And I want to eliminate the necessity of branch prediction
-	 * by removing the loop
-	 */
-	public void multiply(Transform transform){
-		
-		float swap1,swap2,swap3;
-		swap1=matrix[0][0];swap2=matrix[0][1];swap3=matrix[0][2];
-		matrix[0][0]=swap1*transform.matrix[0][0]+
-				swap2*transform.matrix[1][0]+
-				swap3*transform.matrix[2][0]+
-				matrix[0][3]*transform.matrix[3][0];
-		matrix[0][1]=swap1*transform.matrix[0][1]+
-				swap2*transform.matrix[1][1]+
-				swap3*transform.matrix[2][1]+
-				matrix[0][3]*transform.matrix[3][1];
-		matrix[0][2]=swap1*transform.matrix[0][2]+
-				swap2*transform.matrix[1][2]+
-				swap3*transform.matrix[2][2]+
-				matrix[0][3]*transform.matrix[3][2];
-		matrix[0][3]=swap1*transform.matrix[0][3]+
-				swap2*transform.matrix[1][3]+
-				swap3*transform.matrix[2][3]+
-				matrix[0][3]*transform.matrix[3][3];
-		
-		swap1=matrix[1][0];swap2=matrix[1][1];swap3=matrix[1][2];
-		matrix[1][0]=swap1*transform.matrix[0][0]+
-				swap2*transform.matrix[1][0]+
-				swap3*transform.matrix[2][0]+
-				matrix[1][3]*transform.matrix[3][0];
-		matrix[1][1]=swap1*transform.matrix[0][1]+
-				swap2*transform.matrix[1][1]+
-				swap3*transform.matrix[2][1]+
-				matrix[1][3]*transform.matrix[3][1];
-		matrix[1][2]=swap1*transform.matrix[0][2]+
-				swap2*transform.matrix[1][2]+
-				swap3*transform.matrix[2][2]+
-				matrix[1][3]*transform.matrix[3][2];
-		matrix[1][3]=swap1*transform.matrix[0][3]+
-				swap2*transform.matrix[1][3]+
-				swap3*transform.matrix[2][3]+
-				matrix[1][3]*transform.matrix[3][3];
-		
-		swap1=matrix[2][0];swap2=matrix[2][1];swap3=matrix[2][2];
-		matrix[2][0]=swap1*transform.matrix[0][0]+
-				swap2*transform.matrix[1][0]+
-				swap3*transform.matrix[2][0]+
-				matrix[2][3]*transform.matrix[3][0];
-		matrix[2][1]=swap1*transform.matrix[0][1]+
-				swap2*transform.matrix[1][1]+
-				swap3*transform.matrix[2][1]+
-				matrix[2][3]*transform.matrix[3][1];
-		matrix[2][2]=swap1*transform.matrix[0][2]+
-				swap2*transform.matrix[1][2]+
-				swap3*transform.matrix[2][2]+
-				matrix[2][3]*transform.matrix[3][2];
-		matrix[2][3]=swap1*transform.matrix[0][3]+
-				swap2*transform.matrix[1][3]+
-				swap3*transform.matrix[2][3]+
-				matrix[2][3]*transform.matrix[3][3];
-		
-		swap1=matrix[3][0];swap2=matrix[3][1];swap3=matrix[3][2];
-		matrix[3][0]=swap1*transform.matrix[0][0]+
-				swap2*transform.matrix[1][0]+
-				swap3*transform.matrix[2][0]+
-				matrix[3][3]*transform.matrix[3][0];
-		matrix[3][1]=swap1*transform.matrix[0][1]+
-				swap2*transform.matrix[1][1]+
-				swap3*transform.matrix[2][1]+
-				matrix[3][3]*transform.matrix[3][1];
-		matrix[3][2]=swap1*transform.matrix[0][2]+
-				swap2*transform.matrix[1][2]+
-				swap3*transform.matrix[2][2]+
-				matrix[3][3]*transform.matrix[3][2];
-		matrix[3][3]=swap1*transform.matrix[0][3]+
-				swap2*transform.matrix[1][3]+
-				swap3*transform.matrix[2][3]+
-				matrix[3][3]*transform.matrix[3][3];		
-	}
-	
-	/** 
-	 * @author sudip
-	 * @param it has array as input argument. 
-	 * I don't know this function is necessary or not
-	 * will accessing the array directly make things 
-	 * faster than accessing array inside a object?
-	 * Well, I don't know but lets hope this runs
-	 * faster than the previous one.Otherwiise 
-	 * there is no need of this function.
-	 */
-	public void multiply(float matrix2[][]){
-		
-		float swap1,swap2,swap3;
-		swap1=matrix[0][0];swap2=matrix[0][1];swap3=matrix[0][2];
-		matrix[0][0]=swap1*matrix2[0][0]+
-				swap2*matrix2[1][0]+
-				swap3*matrix2[2][0]+
-				matrix[0][3]*matrix2[3][0];
-		matrix[0][1]=swap1*matrix2[0][1]+
-				swap2*matrix2[1][1]+
-				swap3*matrix2[2][1]+
-				matrix[0][3]*matrix[3][1];
-		matrix[0][2]=swap1*matrix[0][2]+
-				swap2*matrix2[1][2]+
-				swap3*matrix2[2][2]+
-				matrix[0][3]*matrix2[3][2];
-		matrix[0][3]=swap1*matrix2[0][3]+
-				swap2*matrix2[1][3]+
-				swap3*matrix2[2][3]+
-				matrix[0][3]*matrix2[3][3];
-		
-		swap1=matrix[1][0];swap2=matrix[1][1];swap3=matrix[1][2];
-		matrix[1][0]=swap1*matrix2[0][0]+
-				swap2*matrix2[1][0]+
-				swap3*matrix2[2][0]+
-				matrix[1][3]*matrix2[3][0];
-		matrix[1][1]=swap1*matrix2[0][1]+
-				swap2*matrix2[1][1]+
-				swap3*matrix2[2][1]+
-				matrix[1][3]*matrix2[3][1];
-		matrix[1][2]=swap1*matrix2[0][2]+
-				swap2*matrix2[1][2]+
-				swap3*matrix2[2][2]+
-				matrix[1][3]*matrix2[3][2];
-		matrix[1][3]=swap1*matrix2[0][3]+
-				swap2*matrix2[1][3]+
-				swap3*matrix2[2][3]+
-				matrix[1][3]*matrix2[3][3];
-		
-		swap1=matrix[2][0];swap2=matrix[2][1];swap3=matrix[2][2];
-		matrix[2][0]=swap1*matrix2[0][0]+
-				swap2*matrix2[1][0]+
-				swap3*matrix2[2][0]+
-				matrix[2][3]*matrix2[3][0];
-		matrix[2][1]=swap1*matrix2[0][1]+
-				swap2*matrix2[1][1]+
-				swap3*matrix2[2][1]+
-				matrix[2][3]*matrix2[3][1];
-		matrix[2][2]=swap1*matrix2[0][2]+
-				swap2*matrix2[1][2]+
-				swap3*matrix2[2][2]+
-				matrix[2][3]*matrix2[3][2];
-		matrix[2][3]=swap1*matrix2[0][3]+
-				swap2*matrix2[1][3]+
-				swap3*matrix2[2][3]+
-				matrix[2][3]*matrix2[3][3];
-		
-		swap1=matrix[3][0];swap2=matrix[3][1];swap3=matrix[3][2];
-		matrix[3][0]=swap1*matrix2[0][0]+
-				swap2*matrix2[1][0]+
-				swap3*matrix2[2][0]+
-				matrix[3][3]*matrix2[3][0];
-		matrix[3][1]=swap1*matrix2[0][1]+
-				swap2*matrix2[1][1]+
-				swap3*matrix2[2][1]+
-				matrix[3][3]*matrix2[3][1];
-		matrix[3][2]=swap1*matrix2[0][2]+
-				swap2*matrix2[1][2]+
-				swap3*matrix2[2][2]+
-				matrix[3][3]*matrix2[3][2];
-		matrix[3][3]=swap1*matrix2[0][3]+
-				swap2*matrix2[1][3]+
-				swap3*matrix2[2][3]+
-				matrix[3][3]*matrix2[3][3];	
-	}
-	/**
-	 * @author sudip
-	 * @param list list(java.util.List) of vertices.
-	 *  @see rendercore.RenderReistry.useTransform()
-	 */
-	public void applyOn(java.util.List<Vector4d> list){
-		for (Vector4d vector : list) {
-			vector.x=matrix[0][0]*vector.x+matrix[0][1]*vector.y+matrix[0][2]*vector.z+matrix[0][3]*vector.w;
-			vector.x=matrix[1][0]*vector.x+matrix[1][1]*vector.y+matrix[1][2]*vector.z+matrix[1][3]*vector.w;
-			vector.x=matrix[2][0]*vector.x+matrix[2][1]*vector.y+matrix[2][2]*vector.z+matrix[2][3]*vector.w;
-			vector.x=matrix[3][0]*vector.x+matrix[3][1]*vector.y+matrix[3][2]*vector.z+matrix[3][3]*vector.w;		
+	public void applyOn(List<Float> vertices)
+	{
+		float x,y,z,w;
+		for(int i=0;i<vertices.size();){
+			x=vertices.get(i);
+			y=vertices.get(i+1);
+			z=vertices.get(i+2);
+			w=vertices.get(i+3);
+			vertices.set(i++,x*matrix[0]+y*matrix[1]+z*matrix[2]+w*matrix[3]);
+			vertices.set(i++,x*matrix[4]+y*matrix[5]+z*matrix[6]+w*matrix[7]);
+			vertices.set(i++,x*matrix[8]+y*matrix[9]+z*matrix[10]+w*matrix[11]);
+			vertices.set(i++,x*matrix[12]+y*matrix[13]+z*matrix[14]+w*matrix[15]);
 		}
+	}
+	public void stdRotatex(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		float tmp=matrix[4]*sin_t;
+		matrix[4]*=cos_t;
+		matrix[4]-=matrix[8]*sin_t;
+		matrix[8]*=cos_t;
+		matrix[8]+=tmp;
 		
+		tmp=matrix[5]*sin_t;
+		matrix[5]*=cos_t;
+		matrix[5]-=matrix[9]*sin_t;
+		matrix[9]*=cos_t;
+		matrix[9]+=tmp;
 		
+		tmp=matrix[6]*sin_t;
+		matrix[6]*=cos_t;
+		matrix[6]-=matrix[10]*sin_t;
+		matrix[10]*=cos_t;
+		matrix[10]+=tmp;
+		
+		tmp=matrix[7]*sin_t;
+		matrix[7]*=cos_t;
+		matrix[7]-=matrix[11]*sin_t;
+		matrix[11]*=cos_t;
+		matrix[11]+=tmp;
+		
+	}
+	public void stdRotatez(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		
+		float tmp=matrix[0]*sin_t;
+		matrix[0]*=cos_t;
+		matrix[0]-=matrix[4]*sin_t;
+		matrix[4]*=cos_t;
+		matrix[4]+=tmp;
+		
+		tmp=matrix[1]*sin_t;
+		matrix[1]*=cos_t;
+		matrix[1]-=matrix[5]*sin_t;
+		matrix[5]*=cos_t;
+		matrix[5]+=tmp;
+		
+		tmp=matrix[2]*sin_t;
+		matrix[2]*=cos_t;
+		matrix[2]-=matrix[6]*sin_t;
+		matrix[6]*=cos_t;
+		matrix[6]+=tmp;
+		
+		tmp=matrix[3]*sin_t;
+		matrix[3]*=cos_t;
+		matrix[3]-=matrix[7]*sin_t;
+		matrix[7]*=cos_t;
+		matrix[7]+=tmp;
+	}
+	public void stdRotatey(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		
+		float tmp=matrix[0]*sin_t;
+		matrix[0]*=cos_t;
+		matrix[0]+=matrix[8]*sin_t;
+		matrix[8]*=cos_t;
+		matrix[8]-=tmp;
+		
+		tmp=matrix[1]*sin_t;
+		matrix[1]*=cos_t;
+		matrix[1]+=matrix[9]*sin_t;
+		matrix[9]*=cos_t;
+		matrix[9]-=tmp;
+		
+		tmp=matrix[2]*sin_t;
+		matrix[2]*=cos_t;
+		matrix[2]+=matrix[10]*sin_t;
+		matrix[10]*=cos_t;
+		matrix[10]-=tmp;
+		
+		tmp=matrix[3]*sin_t;
+		matrix[3]*=cos_t;
+		matrix[3]+=matrix[11]*sin_t;
+		matrix[11]*=cos_t;
+		matrix[11]-=tmp;
+	}
+	public void rotatex(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		float[] pos=getPosition();
+		float k1=cos_t-1;
+		float k2=k1*pos[2]+pos[1]*sin_t;
+		k1*=pos[1];k1-=pos[2]*sin_t;
+		
+		float tmp=matrix[4]*sin_t;
+		matrix[4]*=cos_t;
+		matrix[4]-=matrix[8]*sin_t+k1*matrix[12];
+		matrix[8]*=cos_t;
+		matrix[8]+=tmp+k2*matrix[12];
+		
+		tmp=matrix[5]*sin_t;
+		matrix[5]*=cos_t;
+		matrix[5]-=matrix[9]*sin_t+k1*matrix[13];
+		matrix[9]*=cos_t;
+		matrix[9]+=tmp+k2*matrix[13];
+		
+		tmp=matrix[6]*sin_t;
+		matrix[6]*=cos_t;
+		matrix[6]-=matrix[10]*sin_t+k1*matrix[14];
+		matrix[10]*=cos_t;
+		matrix[10]+=tmp+k2*matrix[14];
+		
+		tmp=matrix[7]*sin_t;
+		matrix[7]*=cos_t;
+		matrix[7]-=matrix[11]*sin_t+k1*matrix[15];
+		matrix[11]*=cos_t;
+		matrix[11]+=tmp+k2*matrix[15];
+	}
+	public void rotatey(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		
+		float[] pos=getPosition();
+		float k1=cos_t-1;
+		float k2=k1*pos[2]-pos[0]*sin_t;
+		k1*=pos[0];k1+=pos[2]*sin_t;
+		
+		float tmp=matrix[0]*sin_t;
+		matrix[0]*=cos_t;
+		matrix[0]+=matrix[8]*sin_t+k1*matrix[12];
+		matrix[8]*=cos_t;
+		matrix[8]-=tmp+k2*matrix[12];
+		
+		tmp=matrix[1]*sin_t;
+		matrix[1]*=cos_t;
+		matrix[1]+=matrix[9]*sin_t+k1*matrix[13];
+		matrix[9]*=cos_t;
+		matrix[9]-=tmp+k2*matrix[13];
+		
+		tmp=matrix[2]*sin_t;
+		matrix[2]*=cos_t;
+		matrix[2]+=matrix[10]*sin_t+k1*matrix[14];
+		matrix[10]*=cos_t;
+		matrix[10]-=tmp+k2*matrix[14];
+		
+		tmp=matrix[3]*sin_t;
+		matrix[3]*=cos_t;
+		matrix[3]+=matrix[11]*sin_t+k1*matrix[15];
+		matrix[11]*=cos_t;
+		matrix[11]-=tmp+k2*matrix[15];
+	}
+	public void rotatez(double angle){
+		angle*=Math.PI;
+		angle/=180;
+		float cos_t=(float)Math.cos(angle);
+		float sin_t=(float)Math.sin(angle);
+		float[] pos=getPosition();
+		float k1=cos_t-1;
+		float k2=k1*pos[1]+pos[0]*sin_t;
+		k1*=pos[0];k1-=pos[1]*sin_t;
+		
+		float tmp=matrix[0]*sin_t;
+		matrix[0]*=cos_t;
+		matrix[0]-=matrix[4]*sin_t+k1*matrix[12];
+		matrix[4]*=cos_t;
+		matrix[4]+=tmp+k2*matrix[12];
+		
+		tmp=matrix[1]*sin_t;
+		matrix[1]*=cos_t;
+		matrix[1]-=matrix[5]*sin_t+k1*matrix[13];
+		matrix[5]*=cos_t;
+		matrix[5]+=tmp+k2*matrix[13];
+		
+		tmp=matrix[2]*sin_t;
+		matrix[2]*=cos_t;
+		matrix[2]-=matrix[6]*sin_t+k1*matrix[14];
+		matrix[6]*=cos_t;
+		matrix[6]+=tmp+k2*matrix[14];
+		
+		tmp=matrix[3]*sin_t;
+		matrix[3]*=cos_t;
+		matrix[3]-=matrix[7]*sin_t+k1*matrix[15];
+		matrix[7]*=cos_t;
+		matrix[7]+=tmp+k2*matrix[15];
+	}
+	/**
+	 * 
+	 * @param a 
+	 * @param b
+	 * @param c
+	 * @param angle
+	 * the direction cosines l,m,n can be used instead of a,b,c but the effect is same.
+	 */
+	public void rotate(double u,double v,double w,double angle){
+		angle*=Math.PI;
+		angle/=180;
+		double r=Math.sqrt(u*u+v*v+w*w);
+		u=u/r;v=v/r;w=w/r;
+		double uSq=u*u,vSq=v*v,wSq=w*w;
+		double sin_t=Math.sin(angle);
+		double cos_t=Math.cos(angle);
+		double oneMinusCos_t=1-cos_t;
+		float[] matrix=new float[16];
+		float[] position=getPosition();
+		matrix[0]=(float)(uSq+(vSq+wSq)*cos_t);
+		matrix[1]=(float)(u*v*oneMinusCos_t-w*sin_t);
+		matrix[2]=(float)(u*w*oneMinusCos_t+v*sin_t);
+		matrix[3]=(float)((position[0]*(vSq+wSq)-u*(position[1]*v+position[2]*w))*oneMinusCos_t+(position[1]*w-position[2]*v)*sin_t);
+		
+		matrix[4]=(float)(u*v*oneMinusCos_t+w*sin_t);
+		matrix[5]=(float)(vSq+(uSq+wSq)*cos_t);
+		matrix[6]=(float)(v*w*oneMinusCos_t-u*sin_t);
+		matrix[7]=(float)((position[1]*(uSq+wSq)-v*(position[0]*u+position[2]*w))*oneMinusCos_t+(position[2]*u-position[0]*w)*sin_t);
+		
+		matrix[8]=(float)(u*w*oneMinusCos_t-v*sin_t);
+		matrix[9]=(float)(v*w*oneMinusCos_t+u*sin_t);
+		matrix[10]=(float)(wSq+(uSq+vSq)*cos_t);
+		matrix[11]=(float)((position[2]*(uSq+vSq)-w*(position[0]*u+position[1]*v))*oneMinusCos_t+(position[0]*v-position[1]*u)*sin_t);
+		
+		matrix[12]=matrix[13]=matrix[14]=0;
+		matrix[15]=1;
+		
+		multiplyBefore(matrix);
+		
+	}
+	
+	public void setRotation(double a,double b,double c){
+		double r_bc=Math.sqrt(b*b+c*c);
+		double r_ac=Math.sqrt(a*a+c*c);
+		
+		float	cos_a=(float)(c/r_bc),
+				sin_a=(float)(b/r_bc),
+				cos_t=(float)(c/r_ac),
+				sin_t=-(float)(a/r_ac);
+		
+		matrix[0]=cos_t;		matrix[1]=0;			matrix[2]=-sin_t;
+		matrix[4]=-sin_t*sin_a;	matrix[5]=cos_a;		matrix[6]=-sin_a*cos_t;
+		matrix[8]=cos_a*sin_t;	matrix[9]=sin_a;		matrix[10]=cos_a*cos_t;	
+		matrix[12]=0;			matrix[13]=0;			matrix[14]=0;				matrix[15]=1;
+	}
+	public void setEulerAngles(double phi,double theta,double psi){
+	}
+	public void moveTo(float x,float y,float z){
+		float[] pos=getPosition();
+		translate(x-pos[0], y-pos[1],z-pos[2]);
+	}
+	public void scale (float x){
+		scale(x,x,x);
+	}
+	public void scale(float x,float y,float z){
+		matrix[0]*=x;
+		matrix[1]*=x;
+		matrix[2]*=x;
+		matrix[3]*=x;
+		
+		matrix[4]*=y;
+		matrix[5]*=y;
+		matrix[6]*=y;
+		matrix[7]*=y;
+		
+		matrix[8]*=z;
+		matrix[9]*=z;
+		matrix[10]*=z;
+		matrix[11]*=z;
+	}
+	public void print(){
+		for(int i=0;i<4;i++){
+			for(int j=0;j<4;j++){
+				System.out.printf("%.2f",matrix[i*4+j]);
+				System.out.print('\t');
+			}
+			System.out.println();
+		}
+	}
+	public float[] getMatrix(){
+		return matrix;
+	}
+	protected void multiplyBefore(float[] m2){
+		float[] ans=new float[16];
+		ans[0]=m2[0]*matrix[0]+m2[1]*matrix[4]+m2[2]*matrix[8]+m2[3]*matrix[12];
+		ans[1]=m2[0]*matrix[1]+m2[1]*matrix[5]+m2[2]*matrix[9]+m2[3]*matrix[13];
+		ans[2]=m2[0]*matrix[2]+m2[1]*matrix[6]+m2[2]*matrix[10]+m2[3]*matrix[14];
+		ans[3]=m2[0]*matrix[3]+m2[1]*matrix[7]+m2[2]*matrix[11]+m2[3]*matrix[15];
+		
+		ans[4]=m2[4]*matrix[0]+m2[5]*matrix[4]+m2[6]*matrix[8]+m2[7]*matrix[12];
+		ans[5]=m2[4]*matrix[1]+m2[5]*matrix[5]+m2[6]*matrix[9]+m2[7]*matrix[13];
+		ans[6]=m2[4]*matrix[2]+m2[5]*matrix[6]+m2[6]*matrix[10]+m2[7]*matrix[14];
+		ans[7]=m2[4]*matrix[3]+m2[5]*matrix[7]+m2[6]*matrix[11]+m2[7]*matrix[15];
+		
+		ans[8] =m2[8]*matrix[0]+m2[9]*matrix[4]+m2[10]*matrix[8]+m2[11]*matrix[12];
+		ans[9] =m2[8]*matrix[1]+m2[9]*matrix[5]+m2[10]*matrix[9]+m2[11]*matrix[13];
+		ans[10]=m2[8]*matrix[2]+m2[9]*matrix[6]+m2[10]*matrix[10]+m2[11]*matrix[14];
+		ans[11]=m2[8]*matrix[3]+m2[9]*matrix[7]+m2[10]*matrix[11]+m2[11]*matrix[15];
+		
+		ans[12]=m2[12]*matrix[0]+m2[13]*matrix[4]+m2[14]*matrix[8]+m2[15]*matrix[12];
+		ans[13]=m2[12]*matrix[1]+m2[13]*matrix[5]+m2[14]*matrix[9]+m2[15]*matrix[13];
+		ans[14]=m2[12]*matrix[2]+m2[13]*matrix[6]+m2[14]*matrix[10]+m2[15]*matrix[14];
+		ans[15]=m2[12]*matrix[3]+m2[13]*matrix[7]+m2[14]*matrix[11]+m2[15]*matrix[15];
+		matrix=ans;	
+	}
+	public void printPosition(){
+		Float[] position=new Float[3];
+		position[0]=matrix[0]*x+matrix[1]*y+matrix[2]*z+matrix[3];
+		position[1]=matrix[4]*x+matrix[5]*y+matrix[6]*z+matrix[7];
+		position[2]=matrix[8]*x+matrix[9]*y+matrix[10]*z+matrix[11];
+		System.out.println("Position : ("+position[0]+", "+position[1]+", "+position[2]+')');
+	}
+	public float[] getPosition(){
+		float[] position=new float[3];
+		position[0]=matrix[0]*x+matrix[1]*y+matrix[2]*z+matrix[3];
+		position[1]=matrix[4]*x+matrix[5]*y+matrix[6]*z+matrix[7];
+		position[2]=matrix[8]*x+matrix[9]*y+matrix[10]*z+matrix[11];
+		return position;
+	}
+	public float[] getRotation(){
+		float[] rotation=new float[3];
+		rotation[0]=(float)Math.atan2(-matrix[6], matrix[10]);
+		rotation[1]=(float)Math.atan2(matrix[2],Math.sqrt(matrix[0]*matrix[0]+matrix[1]*matrix[1]));
+		float cos_t=(float)Math.cos(rotation[0]);
+		float sin_t=(float)Math.sin(rotation[0]);
+		rotation[2]=(float)Math.atan2(cos_t*matrix[4]+sin_t*matrix[8],cos_t*matrix[5]+sin_t*matrix[9]);
+		return rotation;
+	}
+	public void printRotation(){
+		float[]rotation=getRotation();
+		System.out.println("Rotation : ("+rotation[0]*180/Math.PI+", "+rotation[1]*180/Math.PI+", "+rotation[2]*180/Math.PI+')');
+	}
+	public float[] getRotation2(){
+		float[] rotation=new float[3];
+		double r=matrix[0]*matrix[0]+matrix[5]*matrix[5]+matrix[10]*matrix[10];
+		double theta=Math.acos((matrix[0]+matrix[5]+matrix[10]-1)/2);
+		return rotation;
+	}
+	public float[] getScale(){
+		float[] scale=new float[3];
+		scale[0]=(float)Math.sqrt(matrix[0]*matrix[0]+matrix[1]*matrix[1]+matrix[2]*matrix[2]);
+		scale[1]=(float)Math.sqrt(matrix[4]*matrix[4]+matrix[5]*matrix[5]+matrix[6]*matrix[6]);
+		scale[2]=(float)Math.sqrt(matrix[8]*matrix[8]+matrix[9]*matrix[9]+matrix[10]*matrix[10]);
+		return scale;
+	}
+	public float[] getRotatedVector(float a,float b,float c){
+		float[] rotated=new float[3];
+		rotated[0]=matrix[0]*a+matrix[1]*b+matrix[2]*c;
+		rotated[1]=matrix[4]*a+matrix[5]*b+matrix[6]*c;
+		rotated[2]=matrix[8]*a+matrix[9]*b+matrix[10]*c;
+		return rotated;
 	}
 	
 }
+  
