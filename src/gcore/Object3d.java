@@ -24,7 +24,6 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private int faceHint;
 	static protected int activeColor;
 	public gcore.Transform transform=new Transform();
-	
 	static class __System{
 		public PrintStream out=java.lang.System.out;
 		private PrintStream devNull;
@@ -39,7 +38,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			out=devNull;
 		}
 		public void enablePrint(){
-			out=java.lang.System.out;
+			out=java.lang.System.out;	
 		}
 		
 	}
@@ -147,7 +146,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			System.out.printf("%.2f",vertex.get(i++));
 			System.out.print(",\t");
 			System.out.printf("%.2f",vertex.get(i++));
-			System.out.println(')');
+			System.out.println(')');	
 		}
 	}
 	static public void printEdges(){
@@ -163,5 +162,76 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public void enableLog(){
 		System.enablePrint();
 	}
+	
+static void renderTriangle_crazy(){
+		
+		Display display=Display.getDisplay();
+		float x1,y1,z1,x2,y2,z2,x3,y3,z3,tmp;
+		int i1;
+		for(int i=0;i<tri.size();i++){
+			// First order the vertices by the y values (might also be equal some times)
+			i1=tri.get(i++);
+			x1=(int)(float)vertex.get(i1++);
+			y1=(int)(float)vertex.get(i1++);
+			z1=(int)(float)vertex.get(i1);
+			i1=tri.get(i++);
+			x2=(int)(float)vertex.get(i1++);
+			y2=(int)(float)vertex.get(i1++);
+			z2=(int)(float)vertex.get(i1);
+			i1=tri.get(i++);
+			x3=(int)(float)vertex.get(i1++);
+			y3=(int)(float)vertex.get(i1++);
+			z3=(int)(float)vertex.get(i1);
+			
+			if(y2>y3){
+				if(y1<y2){
+					if(y1<y3){	//condition y2>y3>y1
+						tmp=y1;y1=y2;y2=y3;y3=tmp;
+						tmp=x1;x1=x2;x2=x3;x3=tmp;
+					}
+					else{	//condition y2>y1>y3
+						tmp=y2;y2=y1;y1=tmp;
+						tmp=x2;x2=x1;x1=tmp;
+						
+					}
+					
+				}
+				else{ //condition y1>y2>y3
+					//need to nothing in this case.
+					
+				}
+			}
+			else{
+				if(y2>y1){//condition y3>y2>y1
+					tmp=y1;y1=y3;y3=tmp;
+					tmp=x1;x1=x3;x3=tmp;
+				}
+				else{
+					if(y3>y1){ //condition y3>y1>y2
+						tmp=y3;y1=y3;y3=y2;y2=tmp;
+						tmp=x3;x1=x3;x3=x2;x2=tmp;
+					}
+					else{  //condition y1>y3>y2
+						tmp=y3;y3=y2;y2=tmp;
+						tmp=x3;x3=x2;x2=tmp;
+					}
+				}
+			}
+			
+			//That was some crazy code above.
+			//Now we have ordered the values such that: y1 >= y2 >= y3
+			
+			
+			if(y1==y2){ //This means the triangle is below facing 
+				if(y2==y3)
+						return;// This is not a triangle. It is a line
+					
+				else{	//this is a downward facing triangle
+					
+				}
+			}
+		}
+	}
+
 }
 
