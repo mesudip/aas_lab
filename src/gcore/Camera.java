@@ -1,12 +1,13 @@
 package gcore;
 
-import com.sun.org.apache.xml.internal.security.encryption.Transforms;
+import java.util.List;
+
 
 public class Camera extends gcore.Object {
 	static Camera mainCamera=new Camera();
 	float far,near;
-	private Transform transform=new Transform();
-	Transform projection=new Transform();
+	public Transform transform=new Transform();
+	public Transform projection=new Transform();
 	float ua,ub,uc;//The direction ratios of the up direction;
 	float rotationDepth=500;
 	static final float zoomscale=(float) 0.1;
@@ -26,9 +27,6 @@ public class Camera extends gcore.Object {
 	public Transform getTransform(){
 		return transform;
 	}
-	public void Scale(float value){
-		transform.scale(value,value , value);
-	}
 	public void zoom(int value){
 		float [] scale=transform.getScale();
 		float[] pos=transform.getPosition();
@@ -43,8 +41,15 @@ public class Camera extends gcore.Object {
 		System.out.println("Camera scale :"+scale[0]+", "+scale[1]+", "+scale[2]);
 	}
 	public void rotateOnDrag(int dx,int dy){
-		
+		//Horizontal Drag only detected now
 		float[] forward=transform.getRotatedVector(0, 0, -1);
+		float[] up=transform.getRotatedVector(0, 1, 0);
+		float[] pos=transform.getPosition();
+		forward[0]=forward[0]*100+pos[0];
+		forward[1]=forward[1]*100+pos[1];
+		forward[2]=forward[2]*100+pos[2];
+		if(dx!=0)
+		transform.rotate(up[0], up[1], up[2], pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
 		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
 	}
 	public void setRotationDepth(float depth){
@@ -72,7 +77,11 @@ public class Camera extends gcore.Object {
 	public void setOrthoProjection(double width,double height){
 		transform.translate((float)(height/2), (float)(width/2),(float)0);
 	}
-	public Transform porjectionTransform(){
-		return projection;
+
+	public void applyTransforms(List<Float>vertices){
+		Transform t=new Transform(transform);
+		t.revert();
+		t.apply(projection);
+		t.applyOn(vertices);
 	}
 }

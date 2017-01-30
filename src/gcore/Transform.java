@@ -7,7 +7,17 @@ public class Transform {
 	//this is the position of the object;
 	float x,y,z;
 	float[] matrix=new float[16];
-	
+	public Transform(){
+		
+	}
+	public Transform(Transform t){
+		x=t.x;
+		y=t.y;
+		z=t.y;
+		for(int i=0;i<15;i++){
+			matrix[i]=t.matrix[i];
+		}
+	}
 	public void translate(float x, float y){
 		matrix[0]+=matrix[12]*x;
 		matrix[1]+=matrix[13]*x;
@@ -289,7 +299,35 @@ public class Transform {
 		multiplyBefore(matrix);
 		
 	}
-	
+	public void rotate(double u,double v,double w,double x,double y,double z,double angle){
+		angle*=Math.PI;
+		angle/=180;
+		double r=Math.sqrt(u*u+v*v+w*w);
+		u=u/r;v=v/r;w=w/r;
+		double uSq=u*u,vSq=v*v,wSq=w*w;
+		double sin_t=Math.sin(angle);
+		double cos_t=Math.cos(angle);
+		double oneMinusCos_t=1-cos_t;
+		float[] matrix=new float[16];
+		
+		matrix[0]=(float)(uSq+(vSq+wSq)*cos_t);
+		matrix[1]=(float)(u*v*oneMinusCos_t-w*sin_t);
+		matrix[2]=(float)(u*w*oneMinusCos_t+v*sin_t);
+		matrix[3]=(float)((x*(vSq+wSq)-u*(y*v+z*w))*oneMinusCos_t+(y*w-z*v)*sin_t);
+		
+		matrix[4]=(float)(u*v*oneMinusCos_t+w*sin_t);
+		matrix[5]=(float)(vSq+(uSq+wSq)*cos_t);
+		matrix[6]=(float)(v*w*oneMinusCos_t-u*sin_t);
+		matrix[7]=(float)((y*(uSq+wSq)-v*(x*u+z*w))*oneMinusCos_t+(z*u-x*w)*sin_t);
+		
+		matrix[8]=(float)(u*w*oneMinusCos_t-v*sin_t);
+		matrix[9]=(float)(v*w*oneMinusCos_t+u*sin_t);
+		matrix[10]=(float)(wSq+(uSq+vSq)*cos_t);
+		matrix[11]=(float)((z*(uSq+vSq)-w*(x*u+y*v))*oneMinusCos_t+(x*v-y*u)*sin_t);
+		matrix[12]=matrix[13]=matrix[14]=0;
+		matrix[15]=1;		
+		multiplyBefore(matrix);
+	}
 	public void setRotation(double a,double b,double c){
 		double r_bc=Math.sqrt(b*b+c*c);
 		double r_ac=Math.sqrt(a*a+c*c);
@@ -391,12 +429,6 @@ public class Transform {
 		float[]rotation=getRotation();
 		System.out.println("Rotation : ("+rotation[0]*180/Math.PI+", "+rotation[1]*180/Math.PI+", "+rotation[2]*180/Math.PI+')');
 	}
-	public float[] getRotation2(){
-		float[] rotation=new float[3];
-		double r=matrix[0]*matrix[0]+matrix[5]*matrix[5]+matrix[10]*matrix[10];
-		double theta=Math.acos((matrix[0]+matrix[5]+matrix[10]-1)/2);
-		return rotation;
-	}
 	public float[] getScale(){
 		float[] scale=new float[3];
 		scale[0]=(float)Math.sqrt(matrix[0]*matrix[0]+matrix[1]*matrix[1]+matrix[2]*matrix[2]);
@@ -410,6 +442,37 @@ public class Transform {
 		rotated[1]=matrix[4]*a+matrix[5]*b+matrix[6]*c;
 		rotated[2]=matrix[8]*a+matrix[9]*b+matrix[10]*c;
 		return rotated;
+	}
+	public void applyReverseOn(List<Float> vertices)
+	{
+		
+		float x,y,z,w;
+		for(int i=0;i<vertices.size();){
+			x=vertices.get(i);
+			y=vertices.get(i+1);
+			z=vertices.get(i+2);
+			w=vertices.get(i+3);
+			vertices.set(i++,x*matrix[0]+y*matrix[4]+z*matrix[8]-w*matrix[3]);
+			vertices.set(i++,x*matrix[1]+y*matrix[5]+z*matrix[9]-w*matrix[7]);
+			vertices.set(i++,x*matrix[2]+y*matrix[6]+z*matrix[10]-w*matrix[11]);
+		}
+	}
+	public void revert(){
+		float tmp;
+		tmp=matrix[1];
+		matrix[1]=matrix[4];
+		matrix[4]=tmp;
+		
+		tmp=matrix[2];
+		matrix[2]=matrix[8];
+		matrix[8]=tmp;
+		
+		tmp=matrix[6];
+		matrix[6]=matrix[9];
+		matrix[9]=tmp;
+				}
+	public void apply(Transform t){
+		this.multiplyBefore(t.matrix);
 	}
 	
 }

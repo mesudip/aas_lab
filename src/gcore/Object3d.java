@@ -18,6 +18,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private List<Float> vertex;
 	static private List<Integer> edge;
 	static private List<Integer> face;
+	static private List<Integer> tri;
 	static private int vertexHint;
 	static private int edgeHint;
 	static private int faceHint;
@@ -129,8 +130,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			object3d.draw();//draw call will register the lines and vertices
 			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
 		}
-		Camera.getCamera().getTransform().applyOn(vertex); //apply camera's transform
-		Camera.getCamera().porjectionTransform().applyOn(vertex); //apply the projection transform
+		Camera.getCamera().applyTransforms(vertex);
 		renderLines();
 		System.out.println("Frame ["+String.valueOf(frameCount++)+"] : Render End\n");
 	}

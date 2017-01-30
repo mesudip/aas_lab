@@ -110,30 +110,30 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 		
 		if(pressedButton==MouseEvent.BUTTON1){
 			Camera.getCamera().getTransform().translate(e.getX()-mouseInitx, e.getY()-mouseInity, 0);
-			mouseInitx=e.getX();
-			mouseInity=e.getY();
-			java.awt.Point absolute=MouseInfo.getPointerInfo().getLocation();
-			Dimension dimension=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			if(mouseInitx<5){
-				mouseInitx=getWidth()-5;
-			}
-			else if(mouseInitx>getWidth()-5){
-				mouseInitx=5;
-			}
-			if(mouseInity<5){
-				mouseInity=getHeight()-5;
-			}
-			else if(mouseInity>getHeight()-5){
-				mouseInity=5;
-			}
-			
-			if(mouseInitx!=e.getX()||mouseInity!=e.getY()){
-				java.awt.Point location=getLocationOnScreen();
-				robot.mouseMove(location.x+mouseInitx, location.y+mouseInity);
-			}	
 		}
 		else if(pressedButton==MouseEvent.BUTTON3){//right mouse drag event
-			Camera.getCamera().rotateOnDrag(mouseInitx-e.getX(),mouseInity-e.getY());
+			Camera.getCamera().rotateOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+		}
+		mouseInitx=e.getX();
+		mouseInity=e.getY();
+		java.awt.Point absolute=MouseInfo.getPointerInfo().getLocation();
+		Dimension dimension=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		if(mouseInitx<5){
+			mouseInitx=getWidth()-5;
+		}
+		else if(mouseInitx>getWidth()-5){
+			mouseInitx=5;
+		}
+		if(mouseInity<5){
+			mouseInity=getHeight()-5;
+		}
+		else if(mouseInity>getHeight()-5){
+			mouseInity=5;
+		}
+		
+		if(mouseInitx!=e.getX()||mouseInity!=e.getY()){
+			java.awt.Point location=getLocationOnScreen();
+			robot.mouseMove(location.x+mouseInitx, location.y+mouseInity);
 		}
 		
 			

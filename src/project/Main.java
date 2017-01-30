@@ -13,7 +13,8 @@ public class Main {
 		//cube.transform.translate(100,100);
 		cube.transform.scale(100,100,100);
 		double val=Math.acos(Math.sqrt(1/3));
-		cube.transform.rotate(1, 1, 1, 45);
+		Camera.getCamera().transform.rotatex(30);
+		Camera.getCamera().transform.rotatey(30);
 		
 		
 		
@@ -26,7 +27,7 @@ public class Main {
 		System.out.println("Camera's Transformation");
 		Camera.getCamera().getTransform().print();
 		System.out.println("Projection Transformation");
-		Camera.getCamera().porjectionTransform().print();
+		Camera.getCamera().projection.print();
 		/*
 		cube.transform.rotate(0, 0, 1, 54.735610317);
 		cube.transform.rotate(0, 1, 0, 54.735610317);
