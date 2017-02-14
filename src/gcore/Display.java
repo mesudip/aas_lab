@@ -22,6 +22,8 @@ import javax.swing.Timer;
 import javax.swing.event.MenuDragMouseEvent;
 
 import com.sun.javafx.scene.paint.GradientUtils.Point;
+import com.sun.javafx.sg.prism.web.NGWebView;
+import com.sun.org.apache.xpath.internal.operations.And;
 import com.sun.prism.Image;
 
 import javafx.scene.input.MouseButton;
@@ -38,7 +40,12 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	Timer timer;
 	private int pressedButton;
 	private int mouseInitx,mouseInity;
+	float[][] zbuffer;
 	Robot robot;
+	int color;
+	public void setColor(int color){
+		this.color=color;
+	}
 	private Display(){
 		super("Output Window");
 		
@@ -83,6 +90,15 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	public void drawPixel(int x,int y,int color){
 		buffer.setRGB(x, y, color);
 	}
+	public void drawPixel(int x,int y,float z){
+		if(x>=0 && y>=0 && x<buffer.getHeight() && y<buffer.getWidth()){
+			//System.out.println("Call draw Pixel :"+x+", "+y);
+			if(zbuffer[y][x]>z){
+				System.out.println("new in z buffer :"+x+", "+y);
+				buffer.setRGB(x, y, color);
+			}
+		}
+	}
 	public void drawLine(int x,int y,int x2,int y2,int color){
 		Graphics graphics=buffer.getGraphics();
 		graphics.setColor(new Color(color));
@@ -91,8 +107,15 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	public BufferedImage getImage(){
 		return image;
 	}
-	public void actionPerformed(ActionEvent e) {
+	synchronized public void actionPerformed(ActionEvent e) {
 		buffer=new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		zbuffer=new float[this.getHeight()][this.getWidth()];
+		for(int i=0;i<getHeight();i++){
+			for(int j=0;j<getWidth();j++){
+				zbuffer[i][j]=Float.MAX_VALUE;
+			}
+		}
+		
 		Object3d.render();
 		this.image=buffer;
 		drawPanel.repaint();

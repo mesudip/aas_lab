@@ -19,10 +19,14 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private List<Integer> edge;
 	static private List<Integer> face;
 	static private List<Integer> tri;
+	static private List<Integer> triColor;
+	static private List<Integer> lineColor;
+	
 	static private int vertexHint;
 	static private int edgeHint;
 	static private int faceHint;
-	static protected int activeColor;
+	
+	static protected int activeColor=0x000000ff;
 	public gcore.Transform transform=new Transform();
 	static class __System{
 		public PrintStream out=java.lang.System.out;
@@ -57,6 +61,9 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		vertex=new ArrayList<Float>(vertexHint);
 		edge=new ArrayList<Integer>(edgeHint);
 		face=new ArrayList<Integer>(faceHint);
+		tri=new ArrayList<Integer>(10);
+		triColor=new ArrayList<Integer>(10);
+		lineColor=new ArrayList<Integer>(edgeHint);
 	}
 	protected int addVertex(float x1,float y1,float z1){
 		int count=vertex.size();
@@ -77,28 +84,38 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		return size;
 	}
 	protected void drawLine(float x1,float y1,float z1,float x2,float y2,float z2 ){
+		lineColor.add(activeColor);
 		edge.add(addVertex(x1, y1, z1));
 		edge.add(addVertex(x2,y2, z2));
 		
 	}
 	protected void drawLine(int offset1,int offset2){
+		lineColor.add(activeColor);
 		edge.add(offset1);
 		edge.add(offset2);
 	}
 	protected void drawLine(int[] line,int offset){
+
 		for(int index:line){
 			edge.add((index<<2)+offset);
 		}
+		for(int i=0;i<line.length/2;i++){
+			lineColor.add(activeColor);
+		}
+		
 	}
-	
+	protected void drawTriangle(int i1,int i2,int i3){
+		tri.add(i1);
+		tri.add(i2);
+		tri.add(i3);
+		triColor.add(activeColor);
+	}
 	protected void drawFace(){
 		
 	}
-	
 	public gcore.Transform getTransform(){
 		return transform;
 	}
-	
 	
 	private static void renderLines(){
 		int x1,y1,x2,y2;int i1,i2;
@@ -130,10 +147,19 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
 		}
 		Camera.getCamera().applyTransforms(vertex);
-		renderLines();
+		LineRenderer.setDisplay(Display.getDisplay());
+		LineRenderer lineRenderer=new LineRenderer(vertex, edge, lineColor);
+		lineRenderer.rasterize();
+		
+		//renderLines();
+		TriangleRenderer renderer=new TriangleRenderer(vertex,tri,triColor);
+		TriangleRenderer.setDisplay(Display.getDisplay());
+		renderer.rasterize();
+		
+				
 		System.out.println("Frame ["+String.valueOf(frameCount++)+"] : Render End\n");
 	}
-	static public void setActiveColor(int color){
+	protected void setColor(int color){
 		activeColor=color;
 	}
 	static public void printVertices(){
