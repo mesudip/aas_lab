@@ -474,6 +474,5 @@ public class Transform {
 	public void apply(Transform t){
 		this.multiplyBefore(t.matrix);
 	}
-	
 }
   

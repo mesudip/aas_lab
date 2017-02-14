@@ -20,12 +20,13 @@ public class PrimitiveRender {
 	 */
 }
 class TriangleRenderer{
-	float x1,y1,z1,x2,y2,z2,x3,y3,z3;
+	int x1,y1,z1,x2,y2,z2,x3,y3,z3;
 	int color;
-	float tmp;
+	int tmp;
 	int i,i1;
 	java.util.List<Float> vertex;
 	java.util.List<Integer>tri;
+	Display display;
 	void renderTriangle_crazy(){
 		
 		Display display=Display.getDisplay();
@@ -44,6 +45,11 @@ class TriangleRenderer{
 			x3=(int)(float)vertex.get(i1++);
 			y3=(int)(float)vertex.get(i1++);
 			z3=(int)(float)vertex.get(i1);
+			
+			if(y1==y2 && y2==y3)
+				return;
+			if(x1 ==x2 && x2==x3)
+				return;
 			
 			if(y2>y3){
 				if(y1<y2){
@@ -82,8 +88,6 @@ class TriangleRenderer{
 			
 			//That was some crazy code above.
 			//Now we have ordered the values such that: y1 >= y2 >= y3
-			
-			
 			if(y1==y2){ //This means the triangle is below facing 
 				if(y2==y3)
 						return;// This is not a triangle. It is a line
@@ -114,11 +118,18 @@ class TriangleRenderer{
 			//Now we must divide triangle into two parts to make a up facing and a down facing triangle
 		}
 	}
+	
 	void renderTriangleUpPointing(float x1,float y1,float z1,float x2,float y2,float z2,float x3,float y3,float z3){
 		
 		
 	}
 	void renderTriangleDownPointing(float x1,float y1,float z1,float x2,float y2,float z2,float x3,float y3,float z3){
 		
+	}
+	void renderFlatTriangle(){
+		//we have arranged the coordinates as: y1>=y2>=y3;
+		if(y1==y2){
+			
+		}
 	}
 }
