@@ -1,5 +1,4 @@
 package gcore;
-
 public class PrimitiveRender {
 	/**
 	 * 
@@ -16,23 +15,29 @@ public class PrimitiveRender {
 	 */
 }
 class TriangleRenderer{
-	int x1,y1,z1,x2,y2,z2,x3,y3,z3;
-	int x,y,z;
+	
+	int x1,y1,x2,y2,x3,y3;
+	float z1,z2,z3,dz1,dz2;
+	int x,y;
+	float z;
 	int dx1,dx2,xinc1,xinc2,dy,yinc;
 	static int color;
+	public float [] camera_forward;
 	public static void setColor(int color) {
 		TriangleRenderer.color = color;
 	}
-	int tmp;
+	int tmp;float ftemp;
 	int i,i1;
 	java.util.List<Float> vertex;
 	java.util.List<Integer>tri;
 	java.util.List<Integer>triColor;
 	static Display display;
+	LineRenderer lineRenderer;
 	public TriangleRenderer(java.util.List<Float> vertex,java.util.List<Integer>tri,java.util.List<Integer> colorArray) {
 		this.vertex=vertex;
 		this.tri=tri;
 		triColor=colorArray;
+		lineRenderer=new LineRenderer(null,null,null);
 	}
 	public static void setDisplay(Display display) {
 		TriangleRenderer.display = display;
@@ -44,36 +49,54 @@ class TriangleRenderer{
 	}
 	public void rasterize(){
 		int i1;
+		for(int color:triColor){
+			//System.out.print(", "+Integer.valueOf(i1))
+		}
 		for(int i=0;i<tri.size();){
 			//System.out.println("Procesing tri vertex :"+i);
+			color=triColor.get(i/3);
 			i1=tri.get(i++);
-			x1=(int)(float)vertex.get(i1++);
-			y1=(int)(float)vertex.get(i1++);
-			z1=(int)(float)vertex.get(i1);
+			x1=Math.round(vertex.get(i1++));
+			y1=Math.round(vertex.get(i1++));
+			z1=vertex.get(i1);
 			i1=tri.get(i++);
-			x2=(int)(float)vertex.get(i1++);
-			y2=(int)(float)vertex.get(i1++);
-			z2=(int)(float)vertex.get(i1);
+			x2=Math.round(vertex.get(i1++));
+			y2=Math.round(vertex.get(i1++));
+			z2=vertex.get(i1);
 			i1=tri.get(i++);
-			x3=(int)(float)vertex.get(i1++);
-			y3=(int)(float)vertex.get(i1++);
-			z3=(int)(float)vertex.get(i1);
-			color=triColor.get((i%3));
-			//System.out.println("Triangle Rasterization :("+x1+", "+y1+"), ("+x2+", "+y2+"), ("+x3+", "+y3+")");
+			x3=Math.round(vertex.get(i1++));
+			y3=Math.round(vertex.get(i1++));
+			z3=vertex.get(i1);
+			
+			//calculating surface normal
+			z=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
+			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
+			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+			if((z*camera_forward[0]+dz1*camera_forward[1]+dz2*camera_forward[2])>0){
+				//System.out.println("Backface Detected");
+				//continue;
+			}
+			
+			//display.setColor(0xffffff00);
+			display.setColor(color);
+			
+			//System.out.println("Triangle Rasterization :("+x1+", "+y1+", "+z1+"), ("+x2+", "+y2+", "+z1+"), ("+x3+", "+y3+", "+z3+")");
 			if(y1==y2 && y2==y3)
 				continue;
 			if(x1 ==x2 && x2==x3)
-				continue;
+				continue;	
 			
 			if(y2>y3){
 				if(y1<y2){
 					if(y1<y3){	//condition y2>y3>y1
 						tmp=y1;y1=y2;y2=y3;y3=tmp;
 						tmp=x1;x1=x2;x2=x3;x3=tmp;
+						ftemp=z1;z1=z2;z2=z3;z3=ftemp;
 					}
 					else{	//condition y2>y1>y3
 						tmp=y2;y2=y1;y1=tmp;
-						tmp=x2;x2=x1;x1=tmp;	
+						tmp=x2;x2=x1;x1=tmp;
+						ftemp=z2;z2=z1;z1=ftemp;
 					}
 					
 				}
@@ -85,21 +108,25 @@ class TriangleRenderer{
 				if(y2>y1){//condition y3>y2>y1
 					tmp=y1;y1=y3;y3=tmp;
 					tmp=x1;x1=x3;x3=tmp;
+					ftemp=z1;z1=z3;z3=ftemp;
 				}
 				else{
 					if(y3>y1){ //condition y3>y1>y2
-						tmp=y3;y1=y3;y3=y2;y2=tmp;
-						tmp=x3;x1=x3;x3=x2;x2=tmp;
+						tmp=y3;y3=y2;y2=y1;y1=tmp;
+						tmp=x3;x3=x2;x2=x1;x1=tmp;
+						ftemp=z3;z3=z2;z2=z1;z1=ftemp;
 					}
 					else{  //condition y1>y3>y2
 						tmp=y3;y3=y2;y2=tmp;
 						tmp=x3;x3=x2;x2=tmp;
+						ftemp=z3;z3=z2;z2=ftemp;
 					}
 				}
 			}
 			//That was some crazy code above.
 			//Now we have ordered the values such that: y1 >= y2 >= y3
 			if(y1==y2){ //This means the triangle is below facing 
+				
 				if(x1==x2)
 					continue;
 				else if(x1>x2)
@@ -110,13 +137,20 @@ class TriangleRenderer{
 				if(x2==x3)
 					return;
 				else if(x2<x3)
-					renderFlatTriangle(x2, y2, z3, x3, z3, x1, y1, z1);
+					renderFlatTriangle(x2, y2, z2, x3, z3, x1, y1, z1);
 				else
 					renderFlatTriangle(x3, y3, z3, x2, z2, x1, y1, z1);
 			}
 			//We dont' seem to be lucky.
 			//Now we must divide triangle into two parts to make a up facing and a down facing triangle
-			x=x1+(int)(((float)(y2-y1))/(y3-y1)*(x3-x1));
+			x=x1+Math.round((((float)(y2-y1))/(y3-y1)*(x3-x1)));
+			if(z3==z1)
+				z=z3;
+			else{
+				z=z1+(((float)(y2-y1))/(y3-y1))*(z3-z1);
+			}
+			//calculation of z is done by using the condition for four points to be in same plane.
+			//System.out.println("Divided part: ("+x+", "+y2+", "+z);
 			if(x<x2){
 				renderFlatTriangle(x, y2, z, x2, z2, x1, y1, z1);
 				renderFlatTriangle(x, y2, z, x2, z2, x3, y3, z3);
@@ -127,11 +161,14 @@ class TriangleRenderer{
 			}
 		}
 	}
-	void renderFlatTriangle(int x1,int y1,int z1,int x2,int z2, int x3,int y3, int z3){
+	void renderFlatTriangle(int x1,int y1,float z1,int x2,float z2, int x3,int y3, float z3){
 		//System.out.println("  Flat Triangle Rasterization :("+x1+", "+y1+"), ("+x2+", "+y1+"), ("+x3+", "+y3+")");
 		//we have arranged the coordinates as: y3,y1=y2;
 		dx1=x3-x1;
 		dx2=x3-x2;
+		dz1=z3-z1;
+		dz2=z3-z2;
+		
 		dy=y3-y2;
 		
 		if(dx1<0)
@@ -148,16 +185,19 @@ class TriangleRenderer{
 			yinc=+1;
 		int p1,p2;
 		dx1=Math.abs(dx1);dx2=Math.abs(dx2);dy=Math.abs(dy);
-		
+		dz1/=dy;
+		dz2/=dy;
 		
 		if(dx1>dy){//case first line's sampling is aling x axis
+			
 			if(dx2>dy){//case second line's sampling is along x axis
+				
 				dy=dy<<1;
 				p1=dy-dx1;
 				p2=dy-dx2;
 				dx1=dx1<<1;
 				dx2=dx2<<1;
-				display.drawLine(x1, y1, x2, y1,color);
+				lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 			//	System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				while(y3!=y1){
 					while(p1<0){  // for line 1
@@ -176,7 +216,9 @@ class TriangleRenderer{
 					p2-=dx2;
 					p2+=dy;
 					y1+=yinc;
-					display.drawLine(x1, y1, x2, y1,color);
+					
+					z1+=dz1;z2+=dz2;
+					lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 				//	System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				}
 			}
@@ -186,8 +228,7 @@ class TriangleRenderer{
 				dy=dy<<1;
 				p1=dy-dx1;
 				dx1=dx1<<1;
-				
-				display.drawLine(x1, y1, x2, y1,color);
+				lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 				//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				while(y3!=y1){
 					while(p1<0){  // for line 1
@@ -204,8 +245,10 @@ class TriangleRenderer{
 						x2+=xinc2;
 						p2-=dy;
 					}
+					
 					y1+=yinc;
-					display.drawLine(x1, y1, x2, y1,color);
+					z1+=dz1;z2+=dz2;
+					lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 					//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				}
 			}
@@ -219,7 +262,7 @@ class TriangleRenderer{
 				
 				p2=dy-dx2;
 				dx2=dx2<<1;
-				display.drawLine(x1, y1, x2, y1,color);
+				lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 				//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				while(y3!=y1){
 					p1+=dx1;
@@ -236,7 +279,9 @@ class TriangleRenderer{
 					p2-=dx2;
 					p2+=dy;
 					y1+=yinc;
-					display.drawLine(x1, y1, x2, y1,color);
+					
+					z1+=dz1;z2+=dz2;
+					lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 					//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				}
 			}
@@ -246,7 +291,7 @@ class TriangleRenderer{
 				p2=dx2-dy;		
 				p1=dx1-dy;
 				dy=dy<<1;
-				display.drawLine(x1, y1, x2, y1,color);
+				lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 				//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				while(y3!=y1){
 					p1+=dx1;
@@ -260,15 +305,16 @@ class TriangleRenderer{
 						x2+=xinc2;
 						p2-=dy;
 					}
-					y1+=yinc;
-					display.drawLine(x1, y1, x2, y1,color);
+					y1+=yinc;	
+					z1+=dz1;z2+=dz2;
+					lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 					//System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
 				}
 			}
 		}
 		
 	}
-	void renderLine(){
+	void accurateTriangleRenderer(){
 		
 	}
 }
@@ -295,17 +341,16 @@ class LineRenderer{
 	}
 	public void rasterize(){
 		for(int i=0;i<lines.size();i++){
-			//System.out.print("  Line Render - Line ("+edge.get(i).toString());
 			j=lines.get(i++);
-			System.out.print(","+lines.get(i).toString()+") :");
-			x1=(int)(float)vertex.get(j++);
-			y1=(int)(float)vertex.get(j++);
+			x1=Math.round(vertex.get(j++));
+			y1=Math.round(vertex.get(j++));
 			z1=vertex.get(j);
 			j=lines.get(i);
-			x2=(int)(float)vertex.get(j++);
-			y2=(int)(float)vertex.get(j++);
+			x2=Math.round(vertex.get(j++));
+			y2=Math.round(vertex.get(j++));
 			z2=vertex.get(j);
-			//System.out.println("Coord  ("+String.valueOf(x1)+", "+String.valueOf(y1)+") to ("+String.valueOf(x2)+", "+String.valueOf(y2)+")");
+			 //System.out.println("Coord  ("+String.valueOf(x1)+", "+String.valueOf(y1)+") to ("+String.valueOf(x2)+", "+String.valueOf(y2)+")");
+			 //try{Thread.sleep(2000);}catch(Exception e){}
 			display.setColor(lineColor.get(i/2));
 			dx=x2-x1;
 			dy=y2-y1;
@@ -318,17 +363,17 @@ class LineRenderer{
 				yinc=-1;
 			else
 				yinc=1;
-			zinc=z2-z1;
-			zinc/=dx;
-			
+			zinc=z2-z1;	
 			dx=Math.abs(dx);dy=Math.abs(dy);
 			if(dx>dy){
+				zinc/=dx;
 				dy=dy<<1;
 				p=dy-dx;
+				y2=dx;
 				dx=dx<<1;
 				
 				display.drawPixel(x1, y1, z1);
-				while(x1!=x2){
+				for(j=0;j<y2;j++){
 					z1+=zinc;
 					if(p>=0){
 						p-=dx;
@@ -340,13 +385,17 @@ class LineRenderer{
 					//System.out.println("Color :"+Integer.toString(activeColor,16));
 					display.drawPixel(x1, y1, z1);
 				}
+				
+				
 			}
 			else{
+				zinc/=dy;
 				dx=dx<<1;
 				p=dx-dy;
+				x2=dy;
 				dy=dy<<1;
 				display.drawPixel(x1, y1, z1);
-				while(x1!=x2){
+				for(j=0;j<x2;j++){
 					z1+=zinc;
 					if(p>=0){
 						p-=dy;
@@ -357,10 +406,28 @@ class LineRenderer{
 					//System.out.println("Pixel : "+x1+" ,"+y1);
 					display.drawPixel(x1, y1, z1);
 				}
-				
 			}
 			//Display.getDisplay().drawLine(x1, y1, x2, y2,Color.BLACK.getRGB());
-		
+		}
+	}
+	public void renderHorizontalLine(int y,int x1,int x2,float z1,float z2){
+		//System.out.println("Horizontal line : ("+x1+", "+y+", "+z1+"), ("+x2+", "+y+", "+z2+")");
+		if(x2<x1){
+			int tmp;
+			tmp=x2;x2=x1;x1=tmp;
+			float _tmp;
+			_tmp=z1;z1=z2;z2=_tmp;
+		}
+		if(x1==x2){
+			display.drawPixel(x1, y, z1);
+			display.drawPixel(x1, y, z2);
+			return;
+		}
+		z2-=z1;
+		z2/=(x2-x1);
+		for(;x1<=x2;x1++){
+			display.drawPixel(x1, y,z1);
+			z1+=z2;
 		}
 	}
 }

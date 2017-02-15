@@ -52,6 +52,49 @@ public class Camera extends gcore.Object {
 		transform.rotate(up[0], up[1], up[2], pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
 		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
 	}
+	public void rotatexOnDrag(int dx,int dy){
+		//Horizontal Drag only detected now
+		float[] forward=transform.getRotatedVector(0, 0, -1);
+		float[] right=transform.getRotatedVector(1, 0, 0);
+		float[] pos=transform.getPosition();
+		pos[0]=forward[0]*100+pos[0];
+		pos[1]=forward[1]*100+pos[1];
+		pos[2]=forward[2]*100+pos[2];
+		if(dx!=0)
+		transform.rotate(right[0], right[1], right[2], pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
+		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
+	}
+	
+	
+	public void rotateyOnDrag(int dx,int dy){
+		//Horizontal Drag only detected now
+		float[] forward=transform.getRotatedVector(0, 0, -1);
+		float[] up=transform.getRotatedVector(0, 1, 0);
+		float[] pos=transform.getPosition();
+		forward[0]=forward[0]*100+pos[0];
+		forward[1]=forward[1]*100+pos[1];
+		forward[2]=forward[2]*100+pos[2];
+		if(dx!=0)
+		transform.rotate(up[0], up[1], up[2], pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
+		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
+	}
+	public void rotatezOnDrag(int dx,int dy){
+		//Horizontal Drag only detected now
+		float[] forward=transform.getRotatedVector(0, 0, -1);
+		float[] up=transform.getRotatedVector(0, 1, 0);
+		float[] pos=transform.getPosition();
+		pos[0]=forward[0]*100+pos[0];
+		pos[1]=forward[1]*100+pos[1];
+		pos[2]=forward[2]*100+pos[2];
+		if(dx!=0)
+		transform.rotate(forward[0], forward[1], forward[2],pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
+		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
+		System.out.println(" Current position       is:("+pos[0]+", "+pos[1]+", "+pos[2]);
+	}
+	
+	
+	
+	
 	public void setRotationDepth(float depth){
 		rotationDepth=depth;
 	}

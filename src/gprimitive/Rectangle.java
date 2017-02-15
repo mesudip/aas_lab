@@ -1,9 +1,14 @@
 package gprimitive;
 
+
 import gcore.Object3d;
 
 public class Rectangle extends Object3d {
 	int x1,y1,x2,y2;
+	int color=0xff000000;
+	public Rectangle(){
+		x1=-1;x2=1;y1=-1;y2=1;
+	}
 	public Rectangle(int x1,int y1,int x2,int y2){
 		if(x2<x1){
 			this.x2=x1;
@@ -28,12 +33,13 @@ public class Rectangle extends Object3d {
 		
 		int c1=addVertex(x1, y1, 0);
 		int c2=addVertex(x2, y2, 0);
-		
-		setColor(0x00ffff00);
+		super.setColor(color);
 		drawTriangle(c1, c2,addVertex(x1, y2, 0));
-		setColor(0x0000ffff);
 		drawTriangle(c1, c2,addVertex(x2, y1,0));
 		
+	}
+	public void setColor(int color){
+		this.color=color;
 	}
 
 }
