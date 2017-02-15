@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -21,16 +23,21 @@ import java.awt.image.BufferedImage;
 import javax.swing.Timer;
 import javax.swing.event.MenuDragMouseEvent;
 
+import com.sun.javafx.geom.FlatteningPathIterator;
 import com.sun.javafx.scene.paint.GradientUtils.Point;
+import com.sun.javafx.sg.prism.web.NGWebView;
+import com.sun.org.apache.xpath.internal.operations.And;
 import com.sun.prism.Image;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import project.Main;
 import sun.reflect.generics.tree.VoidDescriptor;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Display extends javax.swing.JFrame implements ActionListener,MouseMotionListener,MouseListener,MouseWheelListener,ComponentListener{
+public class Display extends javax.swing.JFrame implements ActionListener,MouseMotionListener,MouseListener,MouseWheelListener,ComponentListener,KeyListener{
 	private static final long serialVersionUID = 1L;
 	static Display display;
 	JPanel drawPanel;
@@ -38,7 +45,16 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	Timer timer;
 	private int pressedButton;
 	private int mouseInitx,mouseInity;
+	float[][] zbuffer;
+	
 	Robot robot;
+	int color;
+	
+	boolean keyMasked=false;
+	int keyMask;
+	public void setColor(int color){
+		this.color=color;
+	}
 	private Display(){
 		super("Output Window");
 		
@@ -68,6 +84,7 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		addComponentListener(this);
+		addKeyListener(this);
 		//drawPanel.addMouseMotionListener(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -83,6 +100,15 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	public void drawPixel(int x,int y,int color){
 		buffer.setRGB(x, y, color);
 	}
+	public void drawPixel(int x,int y,float z){
+		
+		if(x>=0 && y>=0 && x<zbuffer.length && y<zbuffer[0].length){
+			if(zbuffer[x][y]>z){
+				buffer.setRGB(x, y, color);
+				zbuffer[x][y]=z;
+			}
+		}
+	}
 	public void drawLine(int x,int y,int x2,int y2,int color){
 		Graphics graphics=buffer.getGraphics();
 		graphics.setColor(new Color(color));
@@ -91,11 +117,20 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 	public BufferedImage getImage(){
 		return image;
 	}
-	public void actionPerformed(ActionEvent e) {
+	synchronized public void actionPerformed(ActionEvent e) {
+		Main.onUpdate();
 		buffer=new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		zbuffer=new float[this.getWidth()][this.getHeight()];
+		for(int i=0;i<zbuffer.length;i++){
+			for(int j=0;j<zbuffer[i].length;j++){
+				zbuffer[i][j]=Float.POSITIVE_INFINITY;
+			}
+		}
+		
 		Object3d.render();
 		this.image=buffer;
 		drawPanel.repaint();
+		
 		
 	}
 	
@@ -112,7 +147,14 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 			Camera.getCamera().getTransform().translate(e.getX()-mouseInitx, e.getY()-mouseInity, 0);
 		}
 		else if(pressedButton==MouseEvent.BUTTON3){//right mouse drag event
-			Camera.getCamera().rotateOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+			if(keyMasked){
+				if(keyMask==KeyEvent.VK_X)
+				Camera.getCamera().rotatexOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+				else if(keyMask==KeyEvent.VK_Y)
+					Camera.getCamera().rotateyOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+				else if(keyMask==KeyEvent.VK_Z)
+					Camera.getCamera().rotatezOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+			}
 		}
 		mouseInitx=e.getX();
 		mouseInity=e.getY();
@@ -189,6 +231,23 @@ public class Display extends javax.swing.JFrame implements ActionListener,MouseM
 		
 	}
 	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+	}
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void keyPressed(KeyEvent e) {
+		keyMask=e.getKeyCode();
+		keyMasked=true;
+		System.out.println("Key pressed :"+e.getKeyCode()+", "+(char)e.getKeyCode());
+		// TODO Auto-generated method stub
+		
+	}
+	public void keyReleased(KeyEvent e) {
+		System.out.println("Key released");
+		keyMasked=false;
+		
 		// TODO Auto-generated method stub
 		
 	}

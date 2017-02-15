@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name":"Launch_Main",
+            "request": "launch",
+            "program": "java ${workspaceRoot}/bin/project/main",
+            "cwd": "${workspaceRoot}"
+        },
+
+        {
+            "jdkPath":"/usr/bin",
+            "name": "Java",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasename}",
+            "options": [
+                "R-classpath",
+                "\"${fileDirname};.\""
+            ]
+        },
+        {
+            "jdkPath":"/usr/bin",
+            "name": "Java Console App",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasename}",
+            "options": [
+                "-classpath",
+                "\"${fileDirname};.\""
+            ],
+            "externalConsole": true
+        }
+    ]
+}

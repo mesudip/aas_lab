@@ -7,9 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
 
 import gprimitive.Line;
 public abstract class Object3d extends Object implements Transformable, Drawable{
@@ -19,18 +22,25 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private List<Integer> edge;
 	static private List<Integer> face;
 	static private List<Integer> tri;
+	static private List<Integer> triColor;
+	static private List<Integer> lineColor;
 	static private int vertexHint;
 	static private int edgeHint;
 	static private int faceHint;
-	static protected int activeColor;
-	public gcore.Transform transform=new Transform();
 	
+	static protected int activeColor=0xffffffff;
+	public gcore.Transform transform=new Transform();
 	static class __System{
 		public PrintStream out=java.lang.System.out;
 		private PrintStream devNull;
 		public __System(){
 			try{
-				devNull=new PrintStream(new File("/dev/null"));
+				if(java.lang.System.getProperty("os.name").contains("x")){
+					devNull=new PrintStream(new File("/dev/null"));
+				}
+				else
+					devNull=new PrintStream(new File("./nul"));
+				
 			}catch(FileNotFoundException e){
 				
 			}
@@ -39,7 +49,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			out=devNull;
 		}
 		public void enablePrint(){
-			out=java.lang.System.out;
+			out=java.lang.System.out;	
 		}
 		
 	}
@@ -58,6 +68,9 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		vertex=new ArrayList<Float>(vertexHint);
 		edge=new ArrayList<Integer>(edgeHint);
 		face=new ArrayList<Integer>(faceHint);
+		tri=new ArrayList<Integer>(10);
+		triColor=new ArrayList<Integer>(10);
+		lineColor=new ArrayList<Integer>(edgeHint);
 	}
 	protected int addVertex(float x1,float y1,float z1){
 		int count=vertex.size();
@@ -78,28 +91,55 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		return size;
 	}
 	protected void drawLine(float x1,float y1,float z1,float x2,float y2,float z2 ){
+		lineColor.add(activeColor);
 		edge.add(addVertex(x1, y1, z1));
 		edge.add(addVertex(x2,y2, z2));
 		
 	}
 	protected void drawLine(int offset1,int offset2){
+		lineColor.add(activeColor);
 		edge.add(offset1);
 		edge.add(offset2);
 	}
 	protected void drawLine(int[] line,int offset){
+
 		for(int index:line){
 			edge.add((index<<2)+offset);
 		}
+		for(int i=0;i<line.length/2;i++){
+			lineColor.add(activeColor);
+		}
+		
 	}
-	
+	protected void drawTriangle(int[] tri,int offset){
+		for(int index:tri){
+			Object3d.tri.add(index);
+		}
+		for(int i=0;i<tri.length/3;i++)
+			triColor.add(activeColor);
+	}
+	protected void drawTriangle(int[] tri,int[] color,int offset){
+		
+		for(int i=0, k=0;i<tri.length;){
+			triColor.add(color[k++]);
+			Object3d.tri.add((tri[i++]<<2)+offset);
+			Object3d.tri.add((tri[i++]<<2)+offset);
+			Object3d.tri.add((tri[i++]<<2)+offset);
+			
+		}
+	}
+	protected void drawTriangle(int i1,int i2,int i3){
+		tri.add(i1);
+		tri.add(i2);
+		tri.add(i3);
+		triColor.add(activeColor);
+	}
 	protected void drawFace(){
 		
 	}
-	
 	public gcore.Transform getTransform(){
 		return transform;
 	}
-	
 	
 	private static void renderLines(){
 		int x1,y1,x2,y2;int i1,i2;
@@ -113,7 +153,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			i2=edge.get(i);
 			x2=(int)(float)vertex.get(i2++);
 			y2=(int)(float)vertex.get(i2);
-			System.out.println("Coord  ("+String.valueOf(x1)+", "+String.valueOf(y1)+") to ("+String.valueOf(x2)+", "+String.valueOf(y2)+")");
+			//System.out.println("Coord  ("+String.valueOf(x1)+", "+String.valueOf(y1)+") to ("+String.valueOf(x2)+", "+String.valueOf(y2)+")");
 			Display.getDisplay().drawLine(x1, y1, x2, y2,Color.BLACK.getRGB());
 		
 		}
@@ -122,6 +162,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public  void render(){
 		
 		System.out.println("Frame ["+String.valueOf(frameCount)+"] : Render Start");
+		
 		makeArrays();//new array for storing vertices;
 		int lastOffset;
 		for(Object3d object3d :object){
@@ -130,11 +171,26 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			object3d.draw();//draw call will register the lines and vertices
 			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
 		}
+		TriangleRenderer renderer=new TriangleRenderer(vertex,tri,triColor);
+		LineRenderer lineRenderer=new LineRenderer(vertex, edge, lineColor);
+		
+		
 		Camera.getCamera().applyTransforms(vertex);
-		renderLines();
+		
+		renderer.camera_forward=Camera.getCamera().transform.getRotatedVector(0, 0, -1);
+		LineRenderer.setDisplay(Display.getDisplay());		
+		lineRenderer.rasterize();
+		
+		//renderLines();
+		
+		
+		TriangleRenderer.setDisplay(Display.getDisplay());
+		renderer.rasterize();
+		
+				
 		System.out.println("Frame ["+String.valueOf(frameCount++)+"] : Render End\n");
 	}
-	static public void setActiveColor(int color){
+	protected void setColor(int color){
 		activeColor=color;
 	}
 	static public void printVertices(){
@@ -147,7 +203,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			System.out.printf("%.2f",vertex.get(i++));
 			System.out.print(",\t");
 			System.out.printf("%.2f",vertex.get(i++));
-			System.out.println(')');
+			System.out.println(')');	
 		}
 	}
 	static public void printEdges(){
@@ -163,5 +219,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public void enableLog(){
 		System.enablePrint();
 	}
+	
+
 }
 
