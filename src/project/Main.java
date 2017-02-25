@@ -18,6 +18,7 @@ public class Main {
 		Object3d.noLog();
 		gcore.Display.initialize();
 		
+		
 		System.out.println("Cube's Transformation");
 	//	cube.transform.print();
 		System.out.println("Camera's Transformation");
@@ -25,15 +26,42 @@ public class Main {
 		System.out.println("Projection Transformation");
 		Camera.getCamera().projection.print();
 		cube1=new FancyCube();
+		cube2=new FancyCube();
+		//Camera.getCamera().getTransform().translate(100,100,0);	
+		//Camera.getCamera().rotatexOnDrag(-500,0);
 		cube1.transform.scale(100);
-	
+		//cube1.transform.translate(500,500,30);
 		
+		cube2.transform.scale(100);
 		
+		//cube1.transform.perspective();
+		cube1.transform.rotatey(10);
+		cube1.transform.rotatez(0);
+		cube1.transform.rotatex(5);
+		
+		cube2.transform.rotatey(10);
+		cube2.transform.rotatez(0);
+		cube2.transform.rotatex(5);
+		Camera.getCamera().setOrthoProjection(150,200,150,200,20,50);
+		//Camera.getCamera().setOrthoProjection(1000,2000);
+		
+		cube1.transform.translate(20,40,0);
+		//cube1.transform.perspective();
+		//cube2.transform.perspective();
+		//
 		
 	}
 	static public void onUpdate(){
-		cube1.transform.rotatey(0.5);
-		cube1.transform.rotatez(0.5);
-		cube1.transform.rotatex(0.25);
+		//cube1.transform.rotatey(0);
+				//cube1.transform.rotatez(-30);
+				//cube1.transform.rotatex(-30);
+		//cube1.transform.rotatey(0.5);
+		//cube1.transform.rotatez(0.5);
+		//cube1.transform.rotatex(0.25);
+		
+		//cube2.transform.rotatey(0.25);
+		//cube2.transform.rotatez(0.55);
+		//cube2.transform.rotatex(0.25);
+		
 	}
 }

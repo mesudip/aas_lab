@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Camera extends gcore.Object {
 	static Camera mainCamera=new Camera();
-	float far,near;
+	float far=-100,near=20;
 	public Transform transform=new Transform();
 	public Transform projection=new Transform();
 	float ua,ub,uc;//The direction ratios of the up direction;
@@ -22,10 +22,14 @@ public class Camera extends gcore.Object {
 		return mainCamera;
 	}
 	public void translate(float x,float y,float z){
-		transform.translate(-x,-y,-z);
+		//transform.translate(-x,-y,-z);
+		transform.translate(x,y,z);
 	}
 	public Transform getTransform(){
 		return transform;
+	}
+	public Transform getProjection(){
+		return projection;
 	}
 	public void zoom(int value){
 		float [] scale=transform.getScale();
@@ -99,7 +103,7 @@ public class Camera extends gcore.Object {
 		rotationDepth=depth;
 	}
 	public void setOrthoProjection(double left,double right,double bottom,double top,double near,double far){
-		float[] matrix=transform.getMatrix();
+		/*float[] matrix=transform.getMatrix();
 		matrix[0]=(float)((right-left)/2.0);
 		matrix[1]=0;
 		matrix[2]=0;
@@ -112,6 +116,23 @@ public class Camera extends gcore.Object {
 		matrix[9]=0;
 		matrix[10]=(float)((far-near)/2);
 		matrix[11]=(float)((far+near)/2);
+		matrix[12]=0;
+		matrix[13]=0;
+		matrix[14]=0;
+		matrix[15]=1;*/
+		float[] matrix=projection.getMatrix();
+		matrix[0]=(float)(2*near/(right-left));
+		matrix[1]=0;
+		matrix[2]=-(float)((left + right)/(left - right));
+		matrix[3]=0;
+		matrix[4]=0;
+		matrix[5]=-(float)(2*near/(top-bottom));
+		matrix[6]=-(float)((bottom + top)/(bottom - top));
+		matrix[7]=-(float)((top+bottom)/2);
+		matrix[8]=0;
+		matrix[9]=0;
+		matrix[10]=-(float)((far+near)/(near-far));
+		matrix[11]=-(float)(2*far*near/(far-near));
 		matrix[12]=0;
 		matrix[13]=0;
 		matrix[14]=0;
