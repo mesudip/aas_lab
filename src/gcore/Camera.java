@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Camera extends gcore.Object {
 	static Camera mainCamera=new Camera();
-	float far,near;
+	float far=-100,near=20;
 	public Transform transform=new Transform();
 	public Transform projection=new Transform();
 	float ua,ub,uc;//The direction ratios of the up direction;
@@ -123,6 +123,7 @@ public class Camera extends gcore.Object {
 		float[] matrix=projection.getMatrix();
 		matrix[0]=(float)(2*near/(right-left));
 		matrix[1]=0;
+<<<<<<< HEAD
 		matrix[2]=(float)((left + right)/(left - right));
 		matrix[3]=0;
 		matrix[4]=0;
@@ -133,6 +134,18 @@ public class Camera extends gcore.Object {
 		matrix[9]=0;
 		matrix[10]=(float)((far+near)/(near-far));
 		matrix[11]=(float)(2*far*near/(far-near));
+=======
+		matrix[2]=-(float)((left + right)/(left - right));
+		matrix[3]=0;
+		matrix[4]=0;
+		matrix[5]=-(float)(2*near/(top-bottom));
+		matrix[6]=-(float)((bottom + top)/(bottom - top));
+		matrix[7]=-(float)((top+bottom)/2);
+		matrix[8]=0;
+		matrix[9]=0;
+		matrix[10]=-(float)((far+near)/(near-far));
+		matrix[11]=-(float)(2*far*near/(far-near));
+>>>>>>> 9797e36353c24c3b7fe14bc2905328e9f8601641
 		matrix[12]=0;
 		matrix[13]=0;
 		matrix[14]=0;

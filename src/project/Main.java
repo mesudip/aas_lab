@@ -27,6 +27,7 @@ public class Main {
 		Camera.getCamera().projection.print();
 		cube1=new FancyCube();
 		cube2=new FancyCube();
+<<<<<<< HEAD
 		//Camera.getCamera().getTransform().translate(0,0,-50);	
 		Camera.getCamera().getTransform().translate(1000,200,50);
 		//Camera.getCamera().rotatexOnDrag(-500,0);
@@ -47,6 +48,27 @@ public class Main {
 		//Camera.getCamera().setOrthoProjection(1000,2000);
 		cube1.transform.translate(-100,200,50);
 		cube2.transform.translate(-400,800,350);
+=======
+		//Camera.getCamera().getTransform().translate(100,100,0);	
+		//Camera.getCamera().rotatexOnDrag(-500,0);
+		cube1.transform.scale(100);
+		//cube1.transform.translate(500,500,30);
+		
+		cube2.transform.scale(100);
+		
+		//cube1.transform.perspective();
+		cube1.transform.rotatey(10);
+		cube1.transform.rotatez(0);
+		cube1.transform.rotatex(5);
+		
+		cube2.transform.rotatey(10);
+		cube2.transform.rotatez(0);
+		cube2.transform.rotatex(5);
+		Camera.getCamera().setOrthoProjection(150,200,150,200,20,50);
+		//Camera.getCamera().setOrthoProjection(1000,2000);
+		
+		cube1.transform.translate(20,40,0);
+>>>>>>> 9797e36353c24c3b7fe14bc2905328e9f8601641
 		//cube1.transform.perspective();
 		//cube2.transform.perspective();
 		//
