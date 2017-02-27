@@ -1,14 +1,18 @@
 package gcore;
 import java.util.List;
-
+import java.lang.*;
 import javafx.scene.SceneAntialiasing;
 
 public class Transform {
 	//this is the position of the object;
 	float x,y,z;
+	
+	
 	float[] matrix=new float[16];
 	public Transform(){
-		
+		x=0;
+		y=100;
+		z=0;
 	}
 	public Transform(Transform t){
 		x=t.x;
@@ -29,6 +33,7 @@ public class Transform {
 		matrix[6]+=matrix[14]*y;
 		matrix[7]+=matrix[15]*y;
 	}
+	
 	public void translate(float x,float y,float z){
 		matrix[0]+=matrix[12]*x;
 		matrix[1]+=matrix[13]*x;
@@ -473,6 +478,52 @@ public class Transform {
 				}
 	public void apply(Transform t){
 		this.multiplyBefore(t.matrix);
+		
+	}
+	public  void perspective(){
+		//matrix[14]=-(1/5);
+	    //matrix[15]=0;
+		
+		/*Transform t=new Transform();
+		float[] matrix=t.getMatrix();
+		//t=Camera.getCamera().getTransform();
+		float ar=(float)(1.1);
+	    float zprp=-500;
+	   // float zvp=Camera.geCtCamera().far-Camera.getCamera().near;
+	   // System.out.println("zvp"+zvp);
+	  /*  float h=(zprp-t.z)/(zprp-zvp);
+	   // matrix[0]=-(((-50)*matrix[0])/(matrix[10]));
+	   // matrix[5]=-(((-50)*matrix[5])/(matrix[10]));
+	   // matrix[10]=50;
+	   // matrix[15]=1;
+		matrix[2]=-zvp/(zprp-zvp);
+		matrix[3]=zvp*(zprp/(zprp-zvp));
+		matrix[14]=-1/(zprp-zvp);
+		matrix[15]=zprp/(zprp-zvp);
+		*/
+	   
+	/* matrix[14]=1/zvp;
+	 matrix[12]=1/zvp;
+	 matrix[13]=1/zvp;
+	 normalize(zvp);
+		//t.matrix=Camera.getCamera().getProjection().matrix;
+		//apply(t);*/
+	   /* matrix[0]/=ar*(Math.tan(Math.toRadians(45)));
+		matrix[5] /=Math.tan(Math.toRadians(45));
+		matrix[14]=1;
+		matrix[15]=0;
+		matrix[10]=(-Camera.getCamera().near-Camera.getCamera().far)/(Camera.getCamera().near-Camera.getCamera().far);
+		matrix[11]=(2*Camera.getCamera().near*Camera.getCamera().far)/(Camera.getCamera().near-Camera.getCamera().far);
+		normalize();*/
+	}
+	public void normalize(){
+		/*float z=matrix[10];
+		for(int i=0; i<16; i++){
+		matrix[i] /=((z*(1/zvp))+1);*/
+		/*matrix[14]=0;
+		matrix[15]=1;
+		*/
+		
 	}
 }
   
