@@ -127,14 +127,14 @@ class TriangleRenderer{
 			//Now we have ordered the values such that: y1 >= y2 >= y3
 			if(y1==y2){ //This means the triangle is below facing 
 				
-				if(x1==x2)
+				if(x1==x2) //it's a line
 					continue;
 				else if(x1>x2)
 					renderFlatTriangle(x2, y2, z2, x1, z1, x3, y3, z3);
 				
 			}
 			if(y2==y3){	//this is a up facing triangle with v1 up
-				if(x2==x3)
+				if(x2==x3)// it's a ine
 					return;
 				else if(x2<x3)
 					renderFlatTriangle(x2, y2, z2, x3, z3, x1, y1, z1);
@@ -199,8 +199,9 @@ class TriangleRenderer{
 				dx2=dx2<<1;
 				lineRenderer.renderHorizontalLine(y1, x1, x2, z1, z2);
 			//	System.out.println("Drawline:"+x1+","+y1+"-"+x2+","+y1);
-				while(y3!=y1){
-					while(p1<0){  // for line 1
+				while(y3!=y1){ 
+					
+					while(p1<0){  // continue following the line until you get out of current y. 
 						x1+=xinc1;
 						p1+=dy;
 					}
@@ -212,6 +213,7 @@ class TriangleRenderer{
 						x2+=xinc2;
 						p2+=dy;
 					}
+					
 					x2+=xinc2;
 					p2-=dx2;
 					p2+=dy;
@@ -315,6 +317,17 @@ class TriangleRenderer{
 		
 	}
 	void accurateTriangleRenderer(){
+		
+		
+		float dx1,dx2,dy1,dy2,dz1,dz2;
+		dx1=x3-x1;
+		dx2=x2-x1;
+		dy1=y3-y1;
+		dy2=y2-y1;
+		dz1=z3-z1;
+		dz2=z2-z1;
+		float x=x1,y=y1,z=z1;
+		
 		
 	}
 }
@@ -429,5 +442,16 @@ class LineRenderer{
 			display.drawPixel(x1, y,z1);
 			z1+=z2;
 		}
+	}
+}
+class Clipper{
+	java.util.List<Float>vertex;
+	java.util.List<Integer> lines;
+	java.util.List<Integer> tri;
+	float x1,y1;
+	float x2,y2;
+	float z1,z2;
+	void Clip(){
+		vertex.get(1);
 	}
 }

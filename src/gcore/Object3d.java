@@ -151,23 +151,32 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		}
 	}
 	static int frameCount=0;
-	static public  void render(){
+	static public  void render(int x,int y){
 		
 		System.out.println("Frame ["+String.valueOf(frameCount)+"] : Render Start");
 		
 		makeArrays();//new array for storing vertices;
+
 		int lastOffset;
 		for(Object3d object3d :object){
 			System.out.println(" Drawing :"+object3d.toString());
 			lastOffset=vertex.size();
+			
 			object3d.draw();//draw call will register the lines and vertices
 			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
 		}
+		
+		
+		Camera.getCamera().applyTransforms(vertex);
+		//2d
+		
+		//clipping
+		
 		TriangleRenderer renderer=new TriangleRenderer(vertex,tri,triColor);
 		LineRenderer lineRenderer=new LineRenderer(vertex, edge, lineColor);
 		
 		
-		Camera.getCamera().applyTransforms(vertex);
+		
 		
 		renderer.camera_forward=Camera.getCamera().transform.getRotatedVector(0, 0, -1);
 		LineRenderer.setDisplay(Display.getDisplay());		

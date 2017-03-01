@@ -1,4 +1,5 @@
 package gcore;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.List;
 
 import javafx.scene.SceneAntialiasing;
@@ -7,8 +8,7 @@ public class Transform {
 	//this is the position of the object;
 	float x,y,z;
 	float[] matrix=new float[16];
-	public Transform(){
-		
+	public Transform(){	
 	}
 	public Transform(Transform t){
 		x=t.x;
@@ -441,6 +441,10 @@ public class Transform {
 		rotated[0]=matrix[0]*a+matrix[1]*b+matrix[2]*c;
 		rotated[1]=matrix[4]*a+matrix[5]*b+matrix[6]*c;
 		rotated[2]=matrix[8]*a+matrix[9]*b+matrix[10]*c;
+		float[] scale=getScale();
+		rotated [0]/=scale[0];
+		rotated[1]/=scale[1];
+		rotated[2]/=scale[2];
 		return rotated;
 	}
 	public void applyReverseOn(List<Float> vertices)
@@ -470,9 +474,21 @@ public class Transform {
 		tmp=matrix[6];
 		matrix[6]=matrix[9];
 		matrix[9]=tmp;
-				}
+//		
+//		matrix[3]=-matrix[3];
+//		matrix[7]=-matrix[7];
+//		matrix[11]=-matrix[11];
+	}
 	public void apply(Transform t){
 		this.multiplyBefore(t.matrix);
 	}
+	void translateLocal(float x,float y,float z){
+		float[] forward=getRotatedVector(x, y, z);
+		translate(forward[0], forward[1],forward[2]);
+	}
+	public void lookAt(Transform t){
+		
+	}
 }
+	
   
