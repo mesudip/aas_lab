@@ -133,6 +133,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		return transform;
 	}
 	
+	
 	private static void renderLines(){
 		int x1,y1,x2,y2;int i1,i2;
 		for(int i=0;i<edge.size();i++){
@@ -164,6 +165,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 			
 			object3d.draw();//draw call will register the lines and vertices
 			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
+			
 		}
 		
 		
