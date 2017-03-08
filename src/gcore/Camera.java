@@ -1,5 +1,5 @@
 package gcore;
-
+import java.lang.Math;
 import java.util.List;
 
 
@@ -98,43 +98,10 @@ public class Camera extends gcore.Object {
 		rotationDepth=depth;
 	}
 	public void setOrthoProjection(double left,double right,double bottom,double top,double near,double far){
-<<<<<<< HEAD
+
 		float[] matrix=transform.getMatrix();
-		
-=======
-		/*float[] matrix=transform.getMatrix();
->>>>>>> master
-		matrix[0]=(float)((right-left)/2.0);
-		matrix[1]=0;
-		matrix[2]=0;
-		matrix[3]=(float)((left+right)/2);
-		matrix[4]=0;
-		matrix[5]=(float)((top-bottom)/2);
-		matrix[6]=0;
-		matrix[7]=(float)((top+bottom)/2);
-		matrix[8]=0;
-		matrix[9]=0;
-		matrix[10]=(float)((far-near)/2);
-		matrix[11]=(float)((far+near)/2);
-		matrix[12]=0;
-		matrix[13]=0;
-		matrix[14]=0;
-		matrix[15]=1;*/
-		float[] matrix=projection.getMatrix();
 		matrix[0]=(float)(2*near/(right-left));
 		matrix[1]=0;
-<<<<<<< HEAD
-		matrix[2]=(float)((left + right)/(left - right));
-		matrix[3]=0;
-		matrix[4]=0;
-		matrix[5]=(float)(2*near/(top-bottom));
-		matrix[6]=(float)((bottom + top)/(bottom - top));
-		matrix[7]=(float)((top+bottom)/2);
-		matrix[8]=0;
-		matrix[9]=0;
-		matrix[10]=(float)((far+near)/(near-far));
-		matrix[11]=(float)(2*far*near/(far-near));
-=======
 		matrix[2]=-(float)((left + right)/(left - right));
 		matrix[3]=0;
 		matrix[4]=0;
@@ -145,17 +112,16 @@ public class Camera extends gcore.Object {
 		matrix[9]=0;
 		matrix[10]=-(float)((far+near)/(near-far));
 		matrix[11]=-(float)(2*far*near/(far-near));
->>>>>>> 9797e36353c24c3b7fe14bc2905328e9f8601641
 		matrix[12]=0;
 		matrix[13]=0;
-		matrix[14]=0;
+		matrix[14]=1;
 		matrix[15]=1;
 	}
 	public void setOrthoProjection(double width,double height){
 		transform.translate((float)(height/2), (float)(width/2),(float)0);
 	}
 	public void setPerspective(){
-		frustumf2((float)-0.1,(float) 0.3,(float) -0.1,(float) 0.3,(float) 0.2, 1);
+		setOrthoProjection((float)-100,(float) 100,(float) -100,(float) 100,(float) 0, 100);
 	}
 	
 	public void frustumf2(float left, float right, float bottom, float top,float znear, float zfar)
@@ -173,12 +139,13 @@ public class Camera extends gcore.Object {
 		matrix[10] = (-zfar - znear) / temp4;
 		matrix[11] = -1;
 		matrix[14] = (-temp * zfar) / temp4;
-		matrix[15] = 0;
+		matrix[15] = 1;
 	}
 	public void applyTransforms(List<Float>vertices){
 		Transform t=new Transform(transform);
+		t.translate(Object3d.viewPortWidth/(float)2, Object3d.viewPortHeight/(float)2,0);
 		t.revert();
-		t.apply(projection);
+		t.apply(projection);	
 		t.applyOn(vertices);
 	}
 	public void freeMouseRotation(int dx,int dy) {
@@ -186,5 +153,13 @@ public class Camera extends gcore.Object {
 		transform.rotate(rotated[0], rotated[1], rotated[2], 1);
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public float[] getFrontVector(){
+		return transform.getRotatedVector(0, 0, -1);
+	}
+	
+	public float[] getUpVector(){
+		return transform.getRotatedVector(0, 1, 0);
 	}
 }

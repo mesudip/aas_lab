@@ -6,6 +6,7 @@ import gcore.Object3d;
 public class Rectangle extends Object3d {
 	int x1,y1,x2,y2;
 	int color=0xff000000;
+	private boolean wire=false;
 	public Rectangle(){
 		x1=-1;x2=1;y1=-1;y2=1;
 	}
@@ -30,16 +31,31 @@ public class Rectangle extends Object3d {
 		
 	}
 	public void draw() {
-		
 		int c1=addVertex(x1, y1, 0);
 		int c2=addVertex(x2, y2, 0);
 		super.setColor(color);
-		drawTriangle(c1, c2,addVertex(x1, y2, 0));
-		drawTriangle(c1, c2,addVertex(x2, y1,0));
+		if(wire){
+			int c3=addVertex(x1, y2, 0);
+			drawLine(c1, c3);
+			drawLine(c2, c3);
+			c3=addVertex(x2, y1,0);
+			drawLine(c1, c3);
+			drawLine(c2, c3);
+		}
+		else{
+			drawTriangle(c1, c2,addVertex(x1, y2, 0));
+			drawTriangle(c1, c2,addVertex(x2, y1,0));
+		}
 		
 	}
 	public void setColor(int color){
 		this.color=color;
+	}
+	public void makeWireFrame(){
+		wire=true;
+	}
+	public void makeSolid(){
+		wire=false;
 	}
 
 }

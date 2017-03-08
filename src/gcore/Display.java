@@ -4,8 +4,11 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.LayoutManager;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.datatransfer.DataFlavor;
@@ -28,44 +31,29 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
-import java.nio.CharBuffer;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Timer;
-import javax.swing.event.MenuDragMouseEvent;
 
-import com.sun.corba.se.impl.ior.ByteBuffer;
-import com.sun.corba.se.spi.ior.iiop.AlternateIIOPAddressComponent;
-import com.sun.javafx.geom.FlatteningPathIterator;
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-import com.sun.javafx.sg.prism.web.NGWebView;
-import com.sun.org.apache.xpath.internal.axes.UnionPathIterator;
-import com.sun.org.apache.xpath.internal.operations.And;
-import com.sun.prism.Image;
-import com.sun.xml.internal.bind.v2.model.core.NonElement;
+import com.sun.javafx.scene.layout.region.LayeredBackgroundPositionConverter;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import gcomposite.DynamicObject3d;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.transform.Rotate;
-import jdk.internal.dynalink.beans.StaticClass;
-import jdk.management.resource.internal.UnassignedContext;
-import jdk.nashorn.internal.ir.WhileNode;
 import project.Main;
-import sun.java2d.xr.GrowableByteArray;
-import sun.reflect.generics.tree.VoidDescriptor;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class Display extends javax.swing.JFrame implements ActionListener,MouseMotionListener,MouseListener,MouseWheelListener,ComponentListener,KeyListener,DropTargetListener{
 	private static final long serialVersionUID = 1L;
 	long keymasks;
+	AtomicBoolean renderUnderProgress=new AtomicBoolean(false);
 	public enum EditorKey{
 		Up(1<<0),
 		Down(1<<1),
@@ -115,8 +103,11 @@ private int key;
 	boolean freeCamera=false;
 	boolean keyMasked=false;
 	int keyMask;
-	
+	JScrollPane scrollPane=new JScrollPane();
+	JLayeredPane layeredPane=new JLayeredPane();
+	JPanel overlayPanel=new JPanel();
 	EditorKey activeKey=EditorKey.None;
+	
 	public void setColor(int color){
 		this.color=color;
 	}
@@ -138,22 +129,53 @@ private int key;
 		        g2.drawImage(display.getImage(), null, null);
 		    }
 		};
+		JLabel label=new JLabel("Test");
+		label.setSize(new Dimension(300, 300));
+		label.setBackground(Color.ORANGE);
+		label.setForeground(Color.CYAN);
+		label.setVisible(true);
+		label.setOpaque(true);
+		overlayPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+		
+		//overlayPanel.add(label);
+		
+        layeredPane.add(drawPanel, new Integer(0), 0);
+        layeredPane.add(overlayPanel, new Integer(1), 0);
+        label.setVisible(true);
+        
+		
+		setSize(new Dimension(1000,600));
+		setPreferredSize(new Dimension(1000,600));
+		//overlayPanel.setSize(new Dimension(300,100));
+		//overlayPanel.setPreferredSize(new Dimension(300,100));
+		
+		
+		overlayPanel.setLayout(new BoxLayout(overlayPanel, BoxLayout.Y_AXIS));
+		
+		overlayPanel.setPreferredSize(new Dimension(300, 600));
+		overlayPanel.setSize(new Dimension(300, 400));
+		
+		layeredPane.setSize(new Dimension(1000,600));
+		layeredPane.setPreferredSize(new Dimension(1000,600));
 		
 		drawPanel.setSize(new Dimension(1000,600));
 		drawPanel.setPreferredSize(new Dimension(1000,600));
-		getContentPane().add(drawPanel);
+		
+		getContentPane().add(layeredPane);
 		image=new BufferedImage(1000, 600, BufferedImage.TYPE_INT_ARGB);
 		drawPanel.setVisible(true);
-		pack();
+		//pack();
+		
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		addComponentListener(this);
 		addKeyListener(this);
-		//final Display _Display=this;
 		drawPanel.setDropTarget(new DropTarget(this, this));
-		//drawPanel.addMouseMotionListener(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		addMessage("This is test");
+		addMessage("This is another test");
 	}
 	static public void initialize(){
 		display=new Display();
@@ -185,7 +207,10 @@ private int key;
 		return image;
 	}
 	synchronized public void actionPerformed(ActionEvent e) {
-		
+		if(renderUnderProgress.get()){
+			return;
+		}
+		renderUnderProgress.set(true);
 		long time=System.currentTimeMillis();
 		
 		buffer=new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -200,6 +225,7 @@ private int key;
 		drawPanel.repaint();
 		time=System.currentTimeMillis()-time;
 		setTitle(String.format("Output window : [min render time :%03d ms ] [fps :%03.2f ]",time,((float)1)/time*1000));
+		renderUnderProgress.set(false);
 	}
 	
 	static public Display getDisplay(){
@@ -215,12 +241,14 @@ private int key;
 	}
 	
 	public void mouseDragged(MouseEvent e) {
-		
+		//System.out.println("Drag event");
 		if(pressedButton==MouseEvent.BUTTON1){
 			Camera.getCamera().getTransform().translate(e.getX()-mouseInitx, e.getY()-mouseInity, 0);
 		}
 		else if(pressedButton==MouseEvent.BUTTON3){//right mouse drag event
+			//System.out.println("right mouse cicked");
 			if(keyMasked){
+				//System.out.println("Key is masked");
 				if(keyMask==KeyEvent.VK_X)
 					Camera.getCamera().transform.rotatex(e.getX()-mouseInitx);
 					//Camera.getCamera().rotatexOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
@@ -229,8 +257,12 @@ private int key;
 					//Camera.getCamera().rotateyOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
 				else if(keyMask==KeyEvent.VK_Z)
 					Camera.getCamera().transform.rotatez(e.getX()-mouseInitx);
-					//Camera.getCamera().rotatezOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);
+					//Camera.getCamera().rotatezOnDrag(e.getX()-mouseInitx,e.getY()-mouseInity);				
 			}
+			else{
+				//System.out.println("Un masked");	
+			}
+				
 		}
 		mouseInitx=e.getX();
 		mouseInity=e.getY();
@@ -294,7 +326,8 @@ private int key;
 	}
 	public void componentResized(ComponentEvent e) {
 		System.out.println("The component has been resized");
-		//drawPanel.reshape(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
+		layeredPane.reshape(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
+		drawPanel.reshape(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
 		// TODO Auto-generated method stub
 		
 	}
@@ -338,7 +371,17 @@ private int key;
 				Camera.getCamera().transform.translateLocal(0, 10, 0);
 				break;
 			case KeyEvent.VK_C:
-				System.out.print("c key activated");
+
+					System.out.println("Camera Transform:");
+					Camera.getCamera().transform.print();
+					System.out.print("Position ");
+					Transform.printVector(Camera.getCamera().transform.getPosition());
+					System.out.print("Forward ");
+					Transform.printVector(Camera.getCamera().getFrontVector());
+					System.out.print("Up ");
+					Transform.printVector(Camera.getCamera().getUpVector());
+
+					System.out.print("c key activated");
 				if(e.getKeyCode()==KeyEvent.VK_ALT){
 					System.out.println(" : With alt modifier");
 					freeCamera=!freeCamera;
@@ -355,14 +398,29 @@ private int key;
 				break;
 			default:
 				keyMasked=true;
-			
+				break;
+			case KeyEvent.VK_V:
+				System.out.println();
+				System.out.println("Vertices :");
+				Object3d.printVertices();
+				break;
+			case KeyEvent.VK_E:
+				System.out.println();
+				System.out.println("Edges :");
+				Object3d.printEdges();
+				break;
+			case KeyEvent.VK_T:
+				System.out.println();
+				System.out.println("Triangles :");
+				Object3d.printTriangles();
+				break;
 		}
+		
 		
 	}
 	public void keyReleased(KeyEvent e) {
-		System.out.println("Key released");
 		keyMasked=false;
-		
+		activeKey.clear();
 		// TODO Auto-generated method stub
 		
 	}
@@ -391,15 +449,23 @@ private int key;
 		try{
 			dtde.acceptDrop(DnDConstants.ACTION_COPY);
 			List<File> droppedFiles=(List<File>)dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+			Object3d object3d=null;
 			if(!droppedFiles.isEmpty()){
-				new DynamicObject3d(droppedFiles.get(0));
+				object3d=new DynamicObject3d(droppedFiles.get(0));
 			}
+			Object3d.clearExcept(object3d);
 		}
 		catch(Exception ex){
 			System.out.println("Invalid Drop :"+ex.getMessage());
 			ex.printStackTrace();
 			
 		}
+	}
+	public void addMessage(String message){
+		JLabel label=new JLabel(message);
+		label.setVisible(true);
+		overlayPanel.add(label);
+		
 	}
 	
 }
