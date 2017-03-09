@@ -1,8 +1,7 @@
 package gcore;
-import java.nio.file.attribute.PosixFileAttributes;
+
 import java.util.List;
-import java.lang.*;
-import javafx.scene.SceneAntialiasing;
+
 
 public class Transform {
 	//this is the position of the object;
@@ -10,20 +9,16 @@ public class Transform {
 	
 	
 	float[] matrix=new float[16];
-<<<<<<< HEAD
-	public Transform(){	
-=======
+
 	public Transform(){
-		x=0;
-		y=100;
-		z=0;
->>>>>>> master
+		
 	}
+	
 	public Transform(Transform t){
 		x=t.x;
 		y=t.y;
 		z=t.y;
-		for(int i=0;i<15;i++){
+		for(int i=0;i<16;i++){
 			matrix[i]=t.matrix[i];
 		}
 	}
@@ -65,11 +60,35 @@ public class Transform {
 	public void applyOn(List<Float> vertices)
 	{
 		float x,y,z,w;
+		
 		for(int i=0;i<vertices.size();){
 			x=vertices.get(i);
 			y=vertices.get(i+1);
 			z=vertices.get(i+2);
 			w=vertices.get(i+3);
+			//Camera.getCamera().transform.setEulerAngles(30, 30,30);
+						double sx=Math.sin(0);
+			double sy=Math.sin(0);
+			double sz=Math.sin(0);
+			double cx=Math.cos(0);
+			double cy=Math.cos(0);
+			double cz=Math.cos(0);
+			//Camera.getCamera().transform.setRotation(0,0,0.3);
+
+			float[] pos=Camera.getCamera().transform.getPosition();
+			x=x-pos[0];
+			y=y-pos[1];
+			z=z-pos[2];
+			x=(float)(cy*(sz*y+cz*x)-sy*z);
+			y=(float)(sx*(cy*z+sy*(sz*y+cz*x))+cx*(cz*y-sz*x));
+			z=(float)(cx*(cy*z+sy*(sz*y+cz*x))-sx*(cz*y-sz*x));
+			//w=1;
+			//System.err.println("pos0="+pos[0]);
+			x/=(x/z)*pos[2]-pos[0];
+			y/=(y/z)*pos[2]-pos[1];
+			//z=1;
+			//w=1;
+			//z=(z/z)*pos[2]-pos[2];
 			vertices.set(i++,x*matrix[0]+y*matrix[1]+z*matrix[2]+w*matrix[3]);
 			vertices.set(i++,x*matrix[4]+y*matrix[5]+z*matrix[6]+w*matrix[7]);
 			vertices.set(i++,x*matrix[8]+y*matrix[9]+z*matrix[10]+w*matrix[11]);
@@ -351,6 +370,7 @@ public class Transform {
 		matrix[4]=-sin_t*sin_a;	matrix[5]=cos_a;		matrix[6]=-sin_a*cos_t;
 		matrix[8]=cos_a*sin_t;	matrix[9]=sin_a;		matrix[10]=cos_a*cos_t;	
 		matrix[12]=0;			matrix[13]=0;			matrix[14]=0;				matrix[15]=1;
+		multiplyBefore(matrix);
 	}
 	public void setEulerAngles(double phi,double theta,double psi){
 	}
@@ -447,10 +467,11 @@ public class Transform {
 		return scale;
 	}
 	public float[] getRotatedVector(float a,float b,float c){
-		float[] rotated=new float[3];
+		float[] rotated=new float[4];
 		rotated[0]=matrix[0]*a+matrix[1]*b+matrix[2]*c;
 		rotated[1]=matrix[4]*a+matrix[5]*b+matrix[6]*c;
 		rotated[2]=matrix[8]*a+matrix[9]*b+matrix[10]*c;
+		//rotated[3]=matrix[12]*a+matrix[13]*b+matrix[14]*c;
 		float[] scale=getScale();
 		rotated [0]/=scale[0];
 		rotated[1]/=scale[1];

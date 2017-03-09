@@ -20,6 +20,8 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private int edgeHint;
 	static private int faceHint;
 	
+	static public int viewPortHeight;
+	static public int viewPortWidth;
 	static protected int activeColor=0xffffffff;
 	public gcore.Transform transform=new Transform();
 	static class __System{
@@ -154,6 +156,8 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static int frameCount=0;
 	static public  void render(int x,int y){
 		
+		viewPortHeight=y;
+		viewPortWidth=x;
 		System.out.println("Frame ["+String.valueOf(frameCount)+"] : Render Start");
 		
 		makeArrays();//new array for storing vertices;
@@ -222,7 +226,6 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public void enableLog(){
 		System.enablePrint();
 	}
-	
 
 }
 
