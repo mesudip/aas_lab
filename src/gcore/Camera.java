@@ -157,7 +157,7 @@ public class Camera extends gcore.Object {
 		double[] up=transform.getUpVector();
 		double[] pos=transform.getPosition();
 		
-		transform.rotate(up[0], up[1], up[2],((double)-dx)/2);
+		transform.rotate(up[0], up[1], up[2],((double)-dx)/3);
 		transform.rotate(right[0], right[1], right[2],((double)-dy)/2);
 		
 		

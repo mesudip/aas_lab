@@ -236,15 +236,16 @@ private int key;
 		
 	       if(freeCamera){
 	    	   System.out.println("This is going");
-	    	   Camera.getCamera().freeMouseRotation(e.getX()-mouseInitx,e.getY()-mouseInity);
+	    	   
 	       }
+	       Camera.getCamera().freeMouseRotation(e.getX()-mouseInitx,e.getY()-mouseInity);
 	       mouseInitx=e.getX();mouseInity=e.getY();
 	}
 	
 	public void mouseDragged(MouseEvent e) {
 		//System.out.println("Drag event");
 		if(pressedButton==MouseEvent.BUTTON1){
-			Camera.getCamera().getTransform().translate(e.getX()-mouseInitx, e.getY()-mouseInity, 0);
+			Camera.getCamera().getTransform().translate(-e.getX()+mouseInitx, -e.getY()+mouseInity, 0);
 		}
 		else if(pressedButton==MouseEvent.BUTTON3){//right mouse drag event
 			//System.out.println("right mouse cicked");

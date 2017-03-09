@@ -43,8 +43,7 @@ public class Main {
 		
 	}
 	static public void onUpdate(){
-		object.transform.rotatey(2);
-		object.transform.localRotatey(2);
+		
 	}
 	static public void main(String[] args){
 //		for(int i=-1000;i<=1000;i+=20){
