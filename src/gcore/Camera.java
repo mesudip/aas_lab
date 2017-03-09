@@ -39,15 +39,12 @@ public class Camera extends gcore.Object {
 	}
 	public void zoom(int value){
 		double [] scale=transform.getScale();
-		double[] pos=transform.getPosition();
-		transform.translate((float)-pos[0],(float)-pos[1],(float)-pos[2]);
 		if(value<0){
 			transform.scale((float)1.1,(float)1.1,(float)1.1);
 		}
 		else{
 			transform.scale((float)0.909090909,(float)0.909090909,(float)0.909090909);
 		}
-		transform.translate((float)pos[0],(float)pos[1],(float)pos[2]);
 		System.out.println("Camera scale :"+scale[0]+", "+scale[1]+", "+scale[2]);
 	}
 	public void rotateOnDrag(int dx,int dy){
@@ -88,16 +85,17 @@ public class Camera extends gcore.Object {
 	}
 	public void rotatezOnDrag(int dx,int dy){
 		//Horizontal Drag only detected now
-		float[] forward=transform.getRotatedVector(0, 0, -1);
-		float[] up=transform.getRotatedVector(0, 1, 0);
+		double[] right=transform.getRightVector();
+		double[] up=transform.getUpVector();
 		double[] pos=transform.getPosition();
-		pos[0]=forward[0]*100+pos[0];
-		pos[1]=forward[1]*100+pos[1];
-		pos[2]=forward[2]*100+pos[2];
-		if(dx!=0)
-		transform.rotate(forward[0], forward[1], forward[2],pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
-		System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
-		System.out.println(" Current position       is:("+pos[0]+", "+pos[1]+", "+pos[2]);
+		
+		transform.rotate(up[0], up[1], up[2],dx);
+		transform.rotate(right[0], right[1], right[2],dy);
+		
+		
+		//transform.rotate(forward[0], forward[1], forward[2],pos[0],pos[1],pos[2],((double)2)*dx/Math.abs(dx));
+		//System.out.println(" Current forward vector is:("+forward[0]+", "+forward[1]+", "+forward[2]);
+		//System.out.println(" Current position       is:("+pos[0]+", "+pos[1]+", "+pos[2]);
 	}
 	
 	public void setRotationDepth(float depth){
@@ -155,9 +153,13 @@ public class Camera extends gcore.Object {
 		t.applyOn(vertices);
 	}
 	public void freeMouseRotation(int dx,int dy) {
-		float[] rotated=transform.getRotatedVector(0,0, 1);
-		transform.rotate(rotated[0], rotated[1], rotated[2], 1);
-		// TODO Auto-generated method stub
+		double[] right=transform.getRightVector();
+		double[] up=transform.getUpVector();
+		double[] pos=transform.getPosition();
+		
+		transform.rotate(up[0], up[1], up[2],((double)-dx)/2);
+		transform.rotate(right[0], right[1], right[2],((double)-dy)/2);
+		
 		
 	}
 	
