@@ -1,4 +1,4 @@
-package gMath;
+package gmath;
 
 import com.sun.beans.editors.DoubleEditor;
 import com.sun.corba.se.impl.protocol.AddressingDispositionException;

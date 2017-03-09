@@ -1,4 +1,4 @@
-package gMath;
+package gmath;
 
 import gcore.Camera;
 import gcore.Object;
