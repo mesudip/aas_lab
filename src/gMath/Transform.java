@@ -85,6 +85,44 @@ public class Transform {
 			vertices.set(i++,x*matrix[12]+y*matrix[13]+z*matrix[14]+w*matrix[15]);
 		}
 	}
+	public void _applyOn(List<Float> vertices)
+	{
+		float x,y,z,w;
+		
+		for(int i=0;i<vertices.size();){
+			x=vertices.get(i);
+			y=vertices.get(i+1);
+			z=vertices.get(i+2);
+			w=vertices.get(i+3);
+			//Camera.getCamera().transform.setEulerAngles(30, 30,30);
+						double sx=Math.sin(0);
+			double sy=Math.sin(0);
+			double sz=Math.sin(0);
+			double cx=Math.cos(0);
+			double cy=Math.cos(0);
+			double cz=Math.cos(0);
+			//Camera.getCamera().transform.setRotation(0,0,0.3);
+
+			double[] pos=gcore.Camera.getCamera().transform.getPosition();
+			x=(float) (x-pos[0]);
+			y= (float)(y-pos[1]);
+			z= (float)(z-pos[2]);
+			x=(float)(cy*(sz*y+cz*x)-sy*z);
+			y=(float)(sx*(cy*z+sy*(sz*y+cz*x))+cx*(cz*y-sz*x));
+			z=(float)(cx*(cy*z+sy*(sz*y+cz*x))-sx*(cz*y-sz*x));
+			//w=1;
+			//System.err.println("pos0="+pos[0]);
+			x/=(x/z)*pos[2]-pos[0];
+			y/=(y/z)*pos[2]-pos[1];
+			//z=1;
+			//w=1;
+			//z=(z/z)*pos[2]-pos[2];
+			vertices.set(i++,x*matrix[0]+y*matrix[1]+z*matrix[2]+w*matrix[3]);
+			vertices.set(i++,x*matrix[4]+y*matrix[5]+z*matrix[6]+w*matrix[7]);
+			vertices.set(i++,x*matrix[8]+y*matrix[9]+z*matrix[10]+w*matrix[11]);
+			vertices.set(i++,x*matrix[12]+y*matrix[13]+z*matrix[14]+w*matrix[15]);
+		}
+	}
 	public void stdRotatex(double angle){
 		angle*=Math.PI;
 		angle/=180;
