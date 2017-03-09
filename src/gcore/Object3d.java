@@ -5,9 +5,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import gMath.Transform;
+import gmath.Transform;
 import gprimitive.Line;
-public abstract class Object3d extends Object implements Transformable, Drawable{
+public abstract class Object3d extends Object implements Drawable{
 	
 	static private List<Object3d> object=new ArrayList<Object3d>();
 	static private List<Float> vertex;
@@ -24,7 +24,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public int viewPortHeight;
 	static public int viewPortWidth;
 	static protected int activeColor=0xffffffff;
-	public gMath.Transform transform=new Transform();
+	public gmath.Transform transform=new Transform();
 	static class __System{
 		public PrintStream out=java.lang.System.out;
 		private PrintStream devNull;
@@ -173,7 +173,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	protected void drawFace(){
 		
 	}
-	public gMath.Transform getTransform(){
+	public gmath.Transform getTransform(){
 		return transform;
 	}
 	static int frameCount=0;

@@ -1,7 +1,7 @@
 package project;
 import java.io.File;
 
-import gMath.Vector;
+import gmath.Vector;
 import gcomposite.DynamicObject3d;
 import gcomposite.FancyCube;
 import gcore.Camera;

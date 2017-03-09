@@ -36,11 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Timer;
 
-import com.sun.javafx.scene.layout.region.LayeredBackgroundPositionConverter;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
-import gMath.Transform;
-import gMath.Vector;
+import gmath.Transform;
+import gmath.Vector;
 import gcomposite.DynamicObject3d;
 import project.Main;
 

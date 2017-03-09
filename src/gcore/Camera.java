@@ -2,7 +2,7 @@ package gcore;
 import java.lang.Math;
 import java.util.List;
 
-import gMath.Transform;
+import gmath.Transform;
 
 
 public class Camera extends gcore.Object {
