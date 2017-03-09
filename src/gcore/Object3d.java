@@ -1,13 +1,11 @@
 package gcore;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.image.renderable.RenderableImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import gMath.Transform;
 import gprimitive.Line;
 public abstract class Object3d extends Object implements Transformable, Drawable{
 	
@@ -19,7 +17,6 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private List<Integer> triColor;
 	static private List<Integer> lineColor;
 	
-	
 	static private int vertexHint;
 	static private int edgeHint;
 	static private int faceHint;
@@ -27,7 +24,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public int viewPortHeight;
 	static public int viewPortWidth;
 	static protected int activeColor=0xffffffff;
-	public gcore.Transform transform=new Transform();
+	public gMath.Transform transform=new Transform();
 	static class __System{
 		public PrintStream out=java.lang.System.out;
 		private PrintStream devNull;
@@ -176,7 +173,7 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	protected void drawFace(){
 		
 	}
-	public gcore.Transform getTransform(){
+	public gMath.Transform getTransform(){
 		return transform;
 	}
 	static int frameCount=0;
@@ -185,27 +182,27 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		viewPortHeight=y;
 		viewPortWidth=x;
 		System.out.println("Frame ["+String.valueOf(frameCount)+"] : Render Start");
-		
-		makeArrays();//new array for storing vertices;
-
-		int lastOffset;
-		for(Object3d object3d :object){	
-			System.out.println(" Drawing :"+object3d.toString());
-			lastOffset=vertex.size();
+		synchronized (object){
 			
-			object3d.draw();//draw call will register the lines and vertices
-			object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
-			System.out.println("\tLast offset :"+lastOffset+"  and offset :"+vertex.size());
-			List<Float> subList=vertex.subList(lastOffset, vertex.size());
-			for(int i=0;i<subList.size();i++){
-				System.out.print("\tVertex :");
-				System.out.print(subList.get(i++));
-				System.out.print("_,_"+subList.get(i++));
-				System.out.println("_,_"+subList.get(i++));
-			
+			makeArrays();//new array for storing vertices;
+			int lastOffset;
+			for(Object3d object3d :object){	
+				System.out.println(" Drawing :"+object3d.toString());
+				lastOffset=vertex.size();
+				
+				object3d.draw();//draw call will register the lines and vertices
+				object3d.transform.applyOn(vertex.subList(lastOffset,vertex.size()));//apply the object's modelview transform
+				System.out.println("\tLast offset :"+lastOffset+"  and offset :"+vertex.size());
+				List<Float> subList=vertex.subList(lastOffset, vertex.size());
+				for(int i=0;i<subList.size();i++){
+					System.out.print("\tVertex :");
+					System.out.print(subList.get(i++));
+					System.out.print("_,_"+subList.get(i++));
+					System.out.println("_,_"+subList.get(i++));
+				
+				}
 			}
 		}
-		
 		Camera.getCamera().applyTransforms(vertex);
 		System.out.println();
 		System.out.println("Total registered vertices :"+vertex.size());
@@ -222,18 +219,17 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 		//clipping
 		try{
 		System.out.println("Rendering Triangle");
-		System.out.println("The size in the trinagle just before assigning :"+tri.size());
 		TriangleRenderer renderer=new TriangleRenderer(vertex,tri,triColor);
 		renderer.setLogStream(System.out);
-		renderer.camera_forward=Camera.getCamera().getFrontVector();
+		renderer.camera_forward=Camera.getCamera().transform.getFrontVector();
 		
 		
 		LineRenderer lineRenderer=new LineRenderer(vertex, edge, lineColor);
 		LineRenderer.setDisplay(Display.getDisplay());		
-		lineRenderer.rasterize();
+		
 		TriangleRenderer.setDisplay(Display.getDisplay());
 		renderer.rasterize();
-		
+		lineRenderer.rasterize();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -254,10 +250,16 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 
 	public static void clearExcept(Object3d object3d) {
 		// TODO Auto-generated method stub
-		for (Object3d obj : object) {
-			if(!obj.getClass().equals(Line.class) && obj!=object3d){
-				object.remove(obj);
+		synchronized (object) {
+			
+			
+			for (Object3d obj : object) {
+				if(!obj.getClass().equals(Line.class)){
+					object.remove(obj);
+				}
 			}
+			object.add(object3d);
+			java.lang.System.out.println("The size of object is now:"+object.size());
 		}
 	}
 	public float[] getFrontVector(){

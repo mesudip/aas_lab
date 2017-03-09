@@ -39,6 +39,8 @@ import javax.swing.Timer;
 import com.sun.javafx.scene.layout.region.LayeredBackgroundPositionConverter;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
+import gMath.Transform;
+import gMath.Vector;
 import gcomposite.DynamicObject3d;
 import project.Main;
 
@@ -206,7 +208,7 @@ private int key;
 	public BufferedImage getImage(){
 		return image;
 	}
-	synchronized public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {
 		if(renderUnderProgress.get()){
 			return;
 		}
@@ -220,7 +222,9 @@ private int key;
 				zbuffer[i][j]=Float.POSITIVE_INFINITY;
 			}
 		}
+		Main.onUpdate();
 		Object3d.render(buffer.getWidth(),buffer.getHeight());
+		
 		this.image=buffer;
 		drawPanel.repaint();
 		time=System.currentTimeMillis()-time;
@@ -349,39 +353,51 @@ private int key;
 	public void keyPressed(KeyEvent e) {
 		keyMask=e.getKeyCode();
 		//System.out.println("Key pressed :"+e.getKeyCode()+", "+(char)e.getKeyCode());
+		float[] vector;
 		switch(e.getKeyCode()){
 			case KeyEvent.VK_W:
 			case KeyEvent.VK_UP:
 				activeKey.mask(EditorKey.Up);
-				Camera.getCamera().transform.translateLocal(0, 0, 10);
+				double[] forward=Camera.getCamera().transform.getRightVector();
+				forward[0]*=5;
+				forward[1]*=5;
+				forward[2]*=5;
+				Camera.getCamera().transform.translate((float)forward[0],(float) forward[1],(float)forward[2]);
 				break;
 			case KeyEvent.VK_S :
 			case KeyEvent.VK_DOWN:
-				activeKey.mask(EditorKey.Down);
-				Camera.getCamera().transform.translateLocal(00, 0, -10);
+				activeKey.mask(EditorKey.Up);
+				forward=Camera.getCamera().transform.getRightVector();
+				forward[0]*=-5;
+				forward[1]*=-5;
+				forward[2]*=-5;
+				Camera.getCamera().transform.translate((float)forward[0], (float)forward[1],(float)forward[2]);
 				break;
 			case KeyEvent.VK_A:
 			case KeyEvent.VK_LEFT:
 				activeKey.mask(EditorKey.Left);
-				Camera.getCamera().transform.translateLocal(0, -10, 0);
+				 forward=Camera.getCamera().transform.getRightVector();
+				Camera.getCamera().transform.rotate(forward[0], forward[1], forward[2], 2);
 				break;
 			case KeyEvent.VK_D:
 			case KeyEvent.VK_RIGHT:
 				activeKey.mask(EditorKey.Right);
-				Camera.getCamera().transform.translateLocal(0, 10, 0);
+				forward=Camera.getCamera().transform.getRightVector();
+				Camera.getCamera().transform.rotate(forward[0], forward[1], forward[2], -2);
+				//Camera.getCamera().transform.rotatey(-2);
 				break;
 			case KeyEvent.VK_C:
 
 					System.out.println("Camera Transform:");
 					Camera.getCamera().transform.print();
 					System.out.print("Position ");
-					Transform.printVector(Camera.getCamera().transform.getPosition());
+					Vector.printVector(Camera.getCamera().transform.getPosition());
 					System.out.print("Forward ");
-					Transform.printVector(Camera.getCamera().getFrontVector());
+					Vector.printVector(Vector.getUnit(Camera.getCamera().transform.getFrontVector()));
 					System.out.print("Up ");
-					Transform.printVector(Camera.getCamera().getUpVector());
+					Vector.printVector(Vector.getUnit(Camera.getCamera().transform.getUpVector()));
 
-					System.out.print("c key activated");
+					
 				if(e.getKeyCode()==KeyEvent.VK_ALT){
 					System.out.println(" : With alt modifier");
 					freeCamera=!freeCamera;

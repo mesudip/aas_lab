@@ -1,6 +1,7 @@
 package project;
 import java.io.File;
 
+import gMath.Vector;
 import gcomposite.DynamicObject3d;
 import gcomposite.FancyCube;
 import gcore.Camera;
@@ -9,13 +10,20 @@ import gprimitive.*;
 
 
 public class Main {
-	static Cube cube1,cube2,cube3;
+	static Cube cube1,cube2,cube3;static Object3d object;
 	static{
-		new Line(-1000,0,0,1000,0,0).setColor(0xffff0000);
-		new Line(0,-1000,0,0,1000,0).setColor(0xff00ff00);
-		new Line(0,0,-1000,0,0,1000).setColor(0xff0000ff);
+		new Line(0,0,0,1000,0,0).setColor(0xffff0000);
+		new Line(0,0,0,0,1000,0).setColor(0xff00ff00);
+		new Line(0,0,0,0,0,1000).setColor(0xff0000ff);
+		
+		new Line(0,0,0,-1000,0,0).setColor(0xffffff00);
+		new Line(0,0,0,0,-1000,0).setColor(0xff00ffff);
+		new Line(0,0,0,0,0,-1000).setColor(0xffff00ff);
+		
 		Object3d.noLog();
+		Camera camera=Camera.getCamera();
 	}
+	static Camera camera=Camera.getCamera();
 	
 	static public void _main(String[] args){
 		Object3d.noLog();
@@ -35,30 +43,46 @@ public class Main {
 		
 	}
 	static public void onUpdate(){
+		object.transform.rotatey(2);
+		object.transform.localRotatey(2);
 	}
 	static public void main(String[] args){
-		//Camera.getCamera().setPerspective();
-//	Rectangle r=new Rectangle();
-//	r.setColor(0xffff00ff);
-//	r=new Rectangle();
-//	r.setColor(0xff000000);
-//	r.makeWireFrame();
+//		for(int i=-1000;i<=1000;i+=20){
+//			new Line(-1000,i,1000,i).setColor(0xff777700);
+//			new Line(i,-1000,i,1000).setColor(0xff777700);
+//		}
+//	
 	
-	
-//		Triangle triangle=new Triangle(-1,-1,1,-1,+1,+1,1,1,1);
+//		Triangle triangle=new Triangle(-1,-1,1,1,+1,+1,-1,1,1);
 //		triangle.setColor(0xffffff00);
 //		new Line(-1,-1,1,-1,1,1).setColor(0xff000000);
 //		new Line(-1,1,1,1,1,1).setColor(0xff000000);
 //		new Line(-1,-1,1,1,1,1).setColor(0xff000000);
-//		
 		
-	//	cube1=new Cube();
-		new FancyCube().transform.scale(200);;
+		
+		//cube1=new Cube();
+		//new FancyCube().transform.scale(200);;
+//		cube1=new FancyCube();
+//		cube1.transform.scale(50);
+//		cube1=new FancyCube();
+//		cube1.transform.scale(40);
+//		cube1.transform.translate(0, 0, 500);
+//		new Cube().transform.scale(50);;
+		
+		//camera.transform.setRotation(-600,0,-50);
+		
+		
+		//cube1.transform.translate(100, 100,100);
 	//	cube1.transform.scale(100);
 		//cube1.transform.scale(100);
+		
+		
 		System.out.println("Working Directory = " +System.getProperty("user.dir"));
+		//Camera.getCamera().transform.translate(0, 0,500);
 		try{
-		//new DynamicObject3d(new File("./objFiles/cube.obj"));
+			object=new DynamicObject3d(new File("objFiles/toroid.obj"));
+			object.transform.rotatex(90);
+		//
 		}
 		catch(Exception e){
 			System.out.println("Exception occured");

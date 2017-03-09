@@ -1,6 +1,8 @@
 package gcore;
 import java.io.PrintStream;
 import java.lang.Math;
+
+import gprimitive.Triangle;
 public class PrimitiveRender {
 	/**
 	 * 
@@ -32,7 +34,7 @@ class TriangleRenderer{
 	int dx1,dx2,xinc1,xinc2,dy1,dy2,yinc,dy;
 	static int color;
 	int counter;
-	public float [] camera_forward;
+	public double [] camera_forward;
 	public static void setColor(int color) {
 		TriangleRenderer.color = color;
 	}
@@ -85,8 +87,8 @@ class TriangleRenderer{
 			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
 			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
 			if((z*camera_forward[0]+dz1*camera_forward[1]+dz2*camera_forward[2])>0){
-				//System.out.println("Backface Detected");
-				
+				//java.lang.System.out.println("Backface Detected");
+				continue;
 			}
 			
 			//display.setColor(0xffffff00);
@@ -196,24 +198,15 @@ class TriangleRenderer{
 			x3=Math.round(vertex.get(i1++));
 			y3=Math.round(vertex.get(i1++));
 			z3=vertex.get(i1);
-			
 			//calculating surface normal
-			z=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
-			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
-			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
-			if((z*camera_forward[0]+dz1*camera_forward[1]+dz2*camera_forward[2])>0){
-				//System.out.println("Backface Detected");
-				
-			}
 			
-			//display.setColor(0xffffff00);
-			display.setColor(color);
 			
-			if(y1==y2 && y2==y3)
+			if((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1)>=0){
 				continue;
-			if(x1 ==x2 && x2==x3)
-				continue;	
-			
+			}
+
+			display.setColor(color);
+
 			if(y2>y3){
 				if(y1<y2){
 					if(y1<y3){	//condition y2>y3>y1
@@ -689,8 +682,6 @@ class LineRenderer{
 					//System.out.println("Color :"+Integer.toString(activeColor,16));
 					display.drawPixel(x1, y1, z1);
 				}
-				
-				
 			}
 			else{
 				zinc/=dy;

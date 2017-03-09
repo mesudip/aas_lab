@@ -2,6 +2,8 @@ package gcore;
 import java.lang.Math;
 import java.util.List;
 
+import gMath.Transform;
+
 
 public class Camera extends gcore.Object {
 	static Camera mainCamera=new Camera();
@@ -14,6 +16,10 @@ public class Camera extends gcore.Object {
 	private Camera(){
 		transform.loadIdentity();
 		projection.loadIdentity();
+		//transform.setRotation(0, 0, 1);
+		transform.scale(1,-1,-1);
+		transform.setLocalFront(0, 0, 1);
+		transform.setLocalUp(0, -1, 0);
 	}
 	public void lookAt(Object3d object){
 		
@@ -32,23 +38,23 @@ public class Camera extends gcore.Object {
 		return projection;
 	}
 	public void zoom(int value){
-		float [] scale=transform.getScale();
-		float[] pos=transform.getPosition();
-		transform.translate(-pos[0],-pos[1],-pos[2]);
+		double [] scale=transform.getScale();
+		double[] pos=transform.getPosition();
+		transform.translate((float)-pos[0],(float)-pos[1],(float)-pos[2]);
 		if(value<0){
 			transform.scale((float)1.1,(float)1.1,(float)1.1);
 		}
 		else{
 			transform.scale((float)0.909090909,(float)0.909090909,(float)0.909090909);
 		}
-		transform.translate(pos[0],pos[1],pos[2]);
+		transform.translate((float)pos[0],(float)pos[1],(float)pos[2]);
 		System.out.println("Camera scale :"+scale[0]+", "+scale[1]+", "+scale[2]);
 	}
 	public void rotateOnDrag(int dx,int dy){
 		//Horizontal Drag only detected now
-		float[] forward=transform.getRotatedVector(0, 0, -1);
+		double[] forward=transform.getFrontVector();
 		float[] up=transform.getRotatedVector(0, 1, 0);
-		float[] pos=transform.getPosition();
+		double[] pos=transform.getPosition();
 		forward[0]=forward[0]*100+pos[0];
 		forward[1]=forward[1]*100+pos[1];
 		forward[2]=forward[2]*100+pos[2];
@@ -60,7 +66,7 @@ public class Camera extends gcore.Object {
 		//Horizontal Drag only detected now
 		float[] forward=transform.getRotatedVector(0, 0, -1);
 		float[] right=transform.getRotatedVector(1, 0, 0);
-		float[] pos=transform.getPosition();
+		double[] pos=transform.getPosition();
 		//pos[0]=forward[0]*100+pos[0];
 		//pos[1]=forward[1]*100+pos[1];
 		//pos[2]=forward[2]*100+pos[2];
@@ -70,9 +76,9 @@ public class Camera extends gcore.Object {
 	}
 	public void rotateyOnDrag(int dx,int dy){
 		//Horizontal Drag only detected now
-		float[] forward=transform.getRotatedVector(0, 0, -1);
-		float[] up=transform.getRotatedVector(0, 1, 0);
-		float[] pos=transform.getPosition();
+		double[] forward=transform.getFrontVector();
+		double[] up=transform.getUpVector();
+		double[] pos=transform.getPosition();
 		forward[0]=forward[0]*100+pos[0];
 		forward[1]=forward[1]*100+pos[1];
 		forward[2]=forward[2]*100+pos[2];
@@ -84,7 +90,7 @@ public class Camera extends gcore.Object {
 		//Horizontal Drag only detected now
 		float[] forward=transform.getRotatedVector(0, 0, -1);
 		float[] up=transform.getRotatedVector(0, 1, 0);
-		float[] pos=transform.getPosition();
+		double[] pos=transform.getPosition();
 		pos[0]=forward[0]*100+pos[0];
 		pos[1]=forward[1]*100+pos[1];
 		pos[2]=forward[2]*100+pos[2];
@@ -143,8 +149,8 @@ public class Camera extends gcore.Object {
 	}
 	public void applyTransforms(List<Float>vertices){
 		Transform t=new Transform(transform);
-		t.translate(Object3d.viewPortWidth/(float)2, Object3d.viewPortHeight/(float)2,0);
 		t.revert();
+		t.translate(Object3d.viewPortWidth/(float)2, Object3d.viewPortHeight/(float)2,0);
 		t.apply(projection);	
 		t.applyOn(vertices);
 	}
@@ -155,11 +161,4 @@ public class Camera extends gcore.Object {
 		
 	}
 	
-	public float[] getFrontVector(){
-		return transform.getRotatedVector(0, 0, -1);
-	}
-	
-	public float[] getUpVector(){
-		return transform.getRotatedVector(0, 1, 0);
-	}
 }

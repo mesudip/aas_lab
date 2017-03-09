@@ -1,4 +1,8 @@
-package gcore;
+package gMath;
+
+import gcore.Camera;
+import gcore.Object;
+import gcore.Object3d;
 
 public class Math extends Object {
 	static public float[] getFrontVector(Object3d object){
