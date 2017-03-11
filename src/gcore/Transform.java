@@ -1,8 +1,7 @@
 package gcore;
-import java.nio.file.attribute.PosixFileAttributes;
+
 import java.util.List;
-import java.lang.*;
-import javafx.scene.SceneAntialiasing;
+
 
 public class Transform {
 	//this is the position of the object;
@@ -10,20 +9,15 @@ public class Transform {
 	
 	
 	float[] matrix=new float[16];
-<<<<<<< HEAD
-	public Transform(){	
-=======
+
 	public Transform(){
-		x=0;
-		y=100;
-		z=0;
->>>>>>> master
+		
 	}
 	public Transform(Transform t){
 		x=t.x;
 		y=t.y;
 		z=t.y;
-		for(int i=0;i<15;i++){
+		for(int i=0;i<16;i++){
 			matrix[i]=t.matrix[i];
 		}
 	}

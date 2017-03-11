@@ -72,14 +72,22 @@ class TriangleRenderer{
 			z=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
 			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
 			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+			double rr=Math.sqrt(z*z+dz1*dz1+dz2*dz2);
+			
+			double[] surfaceNormal=new double[]{z/rr,dz1/rr,dz2/rr};
 			if((z*camera_forward[0]+dz1*camera_forward[1]+dz2*camera_forward[2])>0){
 				//System.out.println("Backface Detected");
 				//continue;
 			}
-			
 			//display.setColor(0xffffff00);
-			display.setColor(color);
+			double intensity=Lighting.getColorIntensity(DirectionalLight.getLights().get(0).getUnitNormalVector(),
+					Camera.getCamera().transform.getRotatedVector(0, 0, -1),
+					surfaceNormal,
+					DirectionalLight.getLights().get(0).getIntensity());
+			int color;
+			color=0xffff0000*(int)Math.round(intensity);
 			
+			display.setColor(color);
 			//System.out.println("Triangle Rasterization :("+x1+", "+y1+", "+z1+"), ("+x2+", "+y2+", "+z1+"), ("+x3+", "+y3+", "+z3+")");
 			if(y1==y2 && y2==y3)
 				continue;

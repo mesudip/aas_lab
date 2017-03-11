@@ -26,9 +26,9 @@ public class DynamicObject3d extends Object3d {
 		
 		ObjReader reader =new ObjReader(_file);
 		ObjReader.DataType type;
-		type=reader.readInitial();
+		
 		while(true){
-			
+			type=reader.readInitial();	
 			if(type==DataType.Vertex){
 				vertex=reader.getVertex();
 				System.out.println("Vertex :("+vertex[0]+", "+vertex[1]+", "+vertex[2]+")");

@@ -43,7 +43,7 @@ import com.sun.corba.se.impl.ior.ByteBuffer;
 import com.sun.corba.se.spi.ior.iiop.AlternateIIOPAddressComponent;
 import com.sun.javafx.geom.FlatteningPathIterator;
 import com.sun.javafx.scene.paint.GradientUtils.Point;
-import com.sun.javafx.sg.prism.web.NGWebView;
+
 import com.sun.org.apache.xpath.internal.axes.UnionPathIterator;
 import com.sun.org.apache.xpath.internal.operations.And;
 import com.sun.prism.Image;
@@ -54,10 +54,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.transform.Rotate;
 import jdk.internal.dynalink.beans.StaticClass;
-import jdk.management.resource.internal.UnassignedContext;
 import jdk.nashorn.internal.ir.WhileNode;
 import project.Main;
-import sun.java2d.xr.GrowableByteArray;
+
 import sun.reflect.generics.tree.VoidDescriptor;
 
 import javax.swing.JFrame;
@@ -187,7 +186,7 @@ private int key;
 	synchronized public void actionPerformed(ActionEvent e) {
 		
 		long time=System.currentTimeMillis();
-		
+		Main.onUpdate();
 		buffer=new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		zbuffer=new float[this.getWidth()][this.getHeight()];
 		for(int i=0;i<zbuffer.length;i++){	
@@ -195,6 +194,13 @@ private int key;
 				zbuffer[i][j]=Float.POSITIVE_INFINITY;
 			}
 		}
+		
+
+		Graphics g=buffer.getGraphics();
+		g.setColor(Color.black);
+		g.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+		
+		
 		Object3d.render(buffer.getWidth(),buffer.getHeight());
 		this.image=buffer;
 		drawPanel.repaint();

@@ -1,11 +1,14 @@
 package gcomposite;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class ObjReader extends FileReader {
+public class ObjReader extends DataInputStream {
 	public enum DataType{
 		Vertex,
 		TextureMap,
@@ -14,145 +17,37 @@ public class ObjReader extends FileReader {
 		Unknown
 		
 	}
-	boolean lineRead;
-	String readString;
+	boolean lineRead=true;;
+	
 	char[] buffer=new char[100];
 	public ObjReader(File file) throws FileNotFoundException {
-		super(file);
-		
-		// TODO Auto-generated constructor stub
+		super(new FileInputStream(file));
 	}
-	boolean confirmRead(char _char) throws IOException{
-		if(read()==_char)
-			return true;
-		return false;
-	}
-	void readLine() throws IOException{
-		int i=0;
-		char _char;
-		while((_char=(char)read())!='\n'){
-			buffer[i++]=_char;
+	public DataType readInitial() throws IOException{
+		String word=new String();
+		char _read;
+		while(!Character.isWhitespace(_read=readChar())){
+			word+=_read;
 		}
-	}
-	boolean readWord() throws IOException{
-		char _char;
-		int i=0;
-		while(Character.isWhitespace(_char=(char)read()));
-		buffer[i++]=_char;
-		while(!Character.isWhitespace(_char=(char)read())){
-			System.out.println("REad :"+_char);
-			buffer[i++]=_char;
+		if(word.equals("v")){
+			return DataType.Vertex;
 		}
-		if(i==2)
-			return false;
-		return true;
-	}
-	DataType readInitial() throws IOException{
-		if(!lineRead)
-			readLine();
-		lineRead=false;
-		Character _char;
-		while(true){
-			if(readWord()){
-				if(buffer[0]=='#'){
-					readLine();
-					continue;
-				}
-				else{
-					return DataType.Unknown;
-					//readLine();
-				}
-			}
-			else{
-				if(buffer[0]=='#'){
-					readLine();
-					continue;
-				}
-				else if(buffer[0]=='v'|| buffer[0]=='V'){
-					return DataType.Vertex;
-				}
-				else if(buffer[0]=='f' || buffer[0]=='F'){
-					return DataType.Face;
-				}
-				else{
-					return DataType.Unknown;
-					//readLine();
-				}
-			}
+		else if(word.equals("f")){
+			return DataType.Face;
+			
 		}
-		
+		return DataType.Unknown;
 	}
 	double[] getVertex() throws IOException{
-		lineRead=true;
-		int start=0,count=0;
-		readLine();
+		System.out.println("new Vertex");
 		double[] vertex=new double[3];
-		
-		
-		for(;!Character.isWhitespace(buffer[count]);count++);
-		vertex[0]=Double.valueOf(new String(buffer,start,count-start));
-		for(;Character.isWhitespace(buffer[start]);start++);
-		start+=count;
-			
-			
-		for(;!Character.isWhitespace(buffer[start+count]);count++);
-		vertex[1]=Double.valueOf(new String(buffer,start,count-start));
-		for(;Character.isWhitespace(buffer[start]);start++);
-		start+=count;
-			
-			
-		for(;!Character.isWhitespace(buffer[start+count]);count++);
-		vertex[1]=Double.valueOf(new String(buffer,start,count-start));
-		
+		vertex[0]=readDouble();
+		vertex[1]=readDouble();
+		vertex[2]=readDouble();
 		return vertex;
+	
 	}
 	int[] getFace() throws IOException{
-		lineRead=true;
-		int start=0,count=0;
-		readLine();
-		int[] vertex=new int[3];
-		for(;buffer[count]!='\\' && buffer[count]!=0;count++);
-		if(buffer[count]==0){
-			count=start;
-			for(;!Character.isWhitespace(buffer[count]);count++);
-			vertex[0]=Integer.valueOf(new String(buffer,start,count-start));
-			for(;Character.isWhitespace(buffer[start]);start++);
-			start+=count;
-					
-					
-			for(;!Character.isWhitespace(buffer[start+count]);count++);
-			vertex[1]=Integer.valueOf(new String(buffer,start,count-start));
-			for(;Character.isWhitespace(buffer[start]);start++);
-			start+=count;
-				
-				
-			for(;!Character.isWhitespace(buffer[start+count]);count++);
-			vertex[1]=Integer.valueOf(new String(buffer,start,count-start));
-		}
-		else{
-			count=start;
-			for(;buffer[count]!='\\';count++);
-			vertex[0]=Integer.valueOf(new String(buffer, start, count-start));
-			for(;buffer[count]!='\\';count++);
-			for(;!Character.isWhitespace(buffer[count]);count++);
-			for(;Character.isWhitespace(buffer[start]);start++);
-			start+=count;
-			
-			for(;buffer[count]!='\\';count++);
-			vertex[0]=Integer.valueOf(new String(buffer, start, count-start));
-			for(;buffer[count]!='\\';count++);
-			for(;!Character.isWhitespace(buffer[count]);count++);
-			for(;Character.isWhitespace(buffer[start]);start++);
-			start+=count;
-			
-			for(;buffer[count]!='\\';count++);
-			vertex[0]=Integer.valueOf(new String(buffer, start, count-start));
-			for(;buffer[count]!='\\';count++);
-		}
-		
-		
-		
-		
-		return vertex;
+		return new int[0];
 	}
 }

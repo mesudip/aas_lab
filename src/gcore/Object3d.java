@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import project.Main;
 public abstract class Object3d extends Object implements Transformable, Drawable{
 	
 	static private List<Object3d> object=new ArrayList<Object3d>();
@@ -20,6 +22,8 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static private int edgeHint;
 	static private int faceHint;
 	
+	static public int viewPortHeight;
+	static public int viewPortWidth;
 	static protected int activeColor=0xffffffff;
 	public gcore.Transform transform=new Transform();
 	static class __System{
@@ -154,8 +158,9 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static int frameCount=0;
 	static public  void render(int x,int y){
 		
+		viewPortHeight=y;
+		viewPortWidth=x;
 		System.out.println("Frame ["+String.valueOf(frameCount)+"] : Render Start");
-		
 		makeArrays();//new array for storing vertices;
 
 		int lastOffset;
@@ -222,7 +227,6 @@ public abstract class Object3d extends Object implements Transformable, Drawable
 	static public void enableLog(){
 		System.enablePrint();
 	}
-	
 
 }
 
