@@ -1,6 +1,5 @@
 package gmath;
 public class Vector {
-	protected double[] vector;
 	
 	public static double[] crossProduct(double x1,double y1,double z1,double x2,double y2, double z2){
 		double[] result=new double[3];
@@ -84,52 +83,18 @@ public class Vector {
 		return unit;
 	}
 	
-	
 }
-class Vector3 extends Vector{
-	Vector3(){
-		vector=new double[3];
-	}
-	public Vector3(double u,double v, double w){
-		vector=new double[3];
-		vector[0]=u;
-		vector[1]=v;
-		vector[2]=w;
-	}
-	public static float[] crossProduct(float[] v1, float[] v2){
-		float[] result=new float[3];
-		result[0]=v1[1]*v2[2]-v2[1]*v1[2];
-		result[1]=v1[2]*v2[0]-v2[2]*v1[0];
-		result[2]=v1[0]*v2[1]-v2[0]*v1[1];
-		return result;
-	}
-	public static double[] crossProduct(double[] v1, double[] v2){
-		double[] result=new double[3];
-		result[0]=v1[1]*v2[2]-v2[1]*v1[2];
-		result[1]=v1[2]*v2[0]-v2[2]*v1[0];
-		result[2]=v1[0]*v2[1]-v2[0]*v1[1];
-		return result;
-	}
-	public static double angle(float[] v1 ,float[] v2){
-		return java.lang.Math.acos((v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])/java.lang.Math.sqrt(v1[0]*v1[0]+v1[1]*v1[1]+v1[2]*v1[2])/java.lang.Math.sqrt(v2[0]*v2[0]+v2[1]*v2[1]+v2[2]*v2[2]))/java.lang.Math.PI*180;
-	}
-	public static double dotProduct(float[] v1,float[]v2){
-		return v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
-	}
-}
-class Vector4 extends Vector{
+
+class Vector4 extends Vector3{
+	public double w;
 	public Vector4() {
-		vector=new double[4];
+		
 	}
-	public Vector4(double u,double v, double w,double y){
-		vector=new double[4];
-		vector[0]=u;
-		vector[1]=v;
-		vector[2]=w;
-		vector[3]=y;
+	public Vector4(double u,double v, double w,double x){
+		super(u,v,w);
+		this.w=x;
+		
 	}
 	
 }
-class Vector2 extends Vector{
-	
-}
+

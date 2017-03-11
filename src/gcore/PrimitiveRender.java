@@ -2,7 +2,10 @@ package gcore;
 import java.io.PrintStream;
 import java.lang.Math;
 
-import gprimitive.Triangle;
+import com.sun.org.apache.bcel.internal.generic.NEW;
+import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.PrivateKeyResolver;
+
+import gmath.Vector3;
 public class PrimitiveRender {
 	/**
 	 * 
@@ -202,7 +205,7 @@ class TriangleRenderer{
 			
 			
 			if((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1)>=0){
-				continue;
+				//continue;
 			}
 
 			display.setColor(color);
@@ -730,10 +733,136 @@ class Clipper{
 	java.util.List<Float>vertex;
 	java.util.List<Integer> lines;
 	java.util.List<Integer> tri;
-	float x1,y1;
-	float x2,y2;
-	float z1,z2;
+	
+	//float cx1,cx2,cy1,cy2,cz1,cz;
+	
+	float x1,y1,z1;
+	float x2,y2,z2;
+	float x3,y3,z3;
+	double dx,dy,dz;
+	int vertexOffset;
+	
+	Vector3 v1=new Vector3(),v2=new Vector3(),v3=new Vector3(),vTemp;
+	int j,k;
+	/**
+	 * The d5,d4,d3 bits represent whether a vertex is outside the area or not
+	 * The d2,d1,d0 bits represent they are on positive or negative side of area if they  are outside. 
+	 */
+	int flag;
 	void Clip(){
-		vertex.get(1);
+		for(int i=0;i<tri.size();){
+			
+			k=lines.get(i++);
+			v1.x=Math.round(vertex.get(k++));
+			v1.y=Math.round(vertex.get(k++));
+			v1.z=vertex.get(j);
+			
+			k=lines.get(i++);
+			v2.x=Math.round(vertex.get(k++));
+			v2.y=Math.round(vertex.get(k++));
+			v2.z=vertex.get(k);
+			
+			k=lines.get(i++);
+			v2.x=Math.round(vertex.get(k++));
+			v2.y=Math.round(vertex.get(k++));
+			v2.z=vertex.get(k);
+			
+			
+			
+			flag=0;
+			if(v1.x<-1){
+				flag|=0b001000;
+			}
+			else if(v1.x >1){
+				flag|=0b001001;
+			}
+			if(v2.x<-1){
+				flag|=0b010000;
+			}
+			else if(v2.x>1){
+				flag|=0b010010;
+			}
+			if(v2.x<-1){
+				flag|=0b100000;
+			}
+			else if (v2.x >1){
+				flag|=0b100100;
+			}
+			
+			if(flag==0){
+				continue;
+			}
+			
+			if(flag>=0b111000){ // if all of the three vertices are outeside the area. 
+				flag&=0b00111;
+				if(flag>=4){
+					 if((flag & 0b010)!=0){
+						 if((flag & 0b001)!=0){
+							 continue;
+						 }
+						 else{
+							 vTemp=v1;v1=v3;v3=vTemp;
+						 }
+							 
+					 }
+					 else{
+						 if((flag & 0b001)!=0){
+							 vTemp=v2;v2=v1;v1=vTemp;
+						 }
+						 else{
+							 
+						 } 
+					 }
+				}
+				else{
+					 if((flag & 0b010)!=0){
+						 if((flag & 0b001)!=0){
+							 
+						 }
+						 else{
+							 vTemp=v2;v2=v1;v1=vTemp;
+						 }
+							 
+					 }
+					 else{
+						 if((flag & 0b001)!=0){
+							 vTemp=v3;v3=v1;v1=vTemp;
+						 }
+						 else{
+							 continue;
+						 } 
+					 }
+				}
+				// now v1 lies on one side and v2,v3 lie on the other side of the area.
+				
+				dy=v2.y-v1.y;
+				dz=v2.z-v1.z;
+				//new vertices are required.
+				dx=(1-v1.x)/(v2.x-v1.x);
+				vTemp=new Vector3(1.0,dx*dy+v1.y,dx*dz+v1.z);
+				addVertex(vTemp);
+				
+				dx=(-1-v1.x)/(v2.x-v1.x);
+				vTemp=new Vector3(1.0,dx*dy+v1.y,dx*dz+v1.z);
+				addVertex(vTemp);
+				dy=v3.y-v1.y;
+				dz=v3.z-v1.z;
+				
+				dx=(1-v1.x)/(v3.x-v1.x);
+				vTemp=new Vector3(1.0,dx*dy+v1.y,dx*dz+v1.z);
+				addVertex(vTemp);
+				
+				dx=(-1-v1.x)/(v3.x-v1.x);
+				vTemp=new Vector3(1.0,dx*dy+v1.y,dx*dz+v1.z);
+				addVertex(vTemp);
+			}
+			
+		}
+	}
+	private void addVertex(Vector3 vertex){
+		this.vertex.add((float)vertex.x);
+		this.vertex.add((float)vertex.y);
+		this.vertex.add((float)vertex.z);
+		this.vertex.add((float)1);
 	}
 }

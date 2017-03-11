@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.sun.scenario.animation.shared.FiniteClipEnvelope;
+
 public class ObjReader extends DataInputStream {
 	public enum DataType{
 		Vertex,
@@ -16,14 +18,17 @@ public class ObjReader extends DataInputStream {
 		Face,
 		Unknown,
 		EndOfFile;
-		
 	}
 	boolean lineRead=true;;
 	
 	char[] buffer=new char[100];
+	public ObjReader(String fileName) throws FileNotFoundException{
+		super(new FileInputStream(fileName));
+	}
 	public ObjReader(File file) throws FileNotFoundException {
 		super(new FileInputStream(file));
 	}
+	
 	public DataType readInitial() throws IOException{
 		
 		String word=new String();
@@ -48,7 +53,6 @@ public class ObjReader extends DataInputStream {
 	}
 	double[] getVertex() throws IOException{
 		String line=readLine();
-		
 		String[] numbers=line.split("\\s");
 		double[] vertex=new double[3];
 		vertex[0]=Double.valueOf(numbers[0].trim());
@@ -56,7 +60,6 @@ public class ObjReader extends DataInputStream {
 		vertex[2]=Double.valueOf(numbers[2].trim());
 		return vertex;
 	}
-	
 	int[] getFace() throws IOException{
 		String line=readLine();
 		String[] numbers=line.split("\\s");

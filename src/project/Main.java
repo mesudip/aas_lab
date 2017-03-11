@@ -74,19 +74,24 @@ public class Main {
 		//cube1.transform.translate(100, 100,100);
 	//	cube1.transform.scale(100);
 		//cube1.transform.scale(100);
-		
+		//new FancyCube().transform.scale(100);
+		new Rectangle().transform.scale(100);
 		
 		System.out.println("Working Directory = " +System.getProperty("user.dir"));
-		//Camera.getCamera().transform.translate(0, 0,500);
-		try{
-			object=new DynamicObject3d(new File("objFiles/toroid.obj"));
-			object.transform.rotatex(90);
-		//
-		}
-		catch(Exception e){
-			System.out.println("Exception occured");
-			e.printStackTrace(System.out);
-		}
+		camera.transform.translate(0, 0,500);
+		
+		
+//		
+//		try{
+//			object=new DynamicObject3d(new File("objFiles/toroid.obj"));
+//			object.transform.rotatex(90);
+//		}
+//		catch(Exception e){
+//			System.out.println("Exception occured");
+//			e.printStackTrace(System.out);
+//		}
+//		
+		
 		gcore.Display.initialize();
 	}
 }

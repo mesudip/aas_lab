@@ -4,10 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
+import gmath.*;
 import gmath.Transform;
 import gprimitive.Line;
 public abstract class Object3d extends Object implements Drawable{
+	
+	static private Vector3[] vertexArray;
+	static private Vector2[] triArray;
 	
 	static private List<Object3d> object=new ArrayList<Object3d>();
 	static private List<Float> vertex;

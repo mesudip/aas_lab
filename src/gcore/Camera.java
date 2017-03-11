@@ -148,7 +148,7 @@ public class Camera extends gcore.Object {
 	public void applyTransforms(List<Float>vertices){
 		Transform t=new Transform(transform);
 		t.revert();
-		t.translate(Object3d.viewPortWidth/(float)2, Object3d.viewPortHeight/(float)2,0);
+		t.translate(Object3d.viewPortWidth/(float)2, Object3d.viewPortHeight/(float)2,0);		
 		t.apply(projection);	
 		t.applyOn(vertices);
 	}

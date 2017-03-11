@@ -138,8 +138,8 @@ private int key;
 		
 		//overlayPanel.add(label);
 		
-        layeredPane.add(drawPanel, new Integer(0), 0);
-        layeredPane.add(overlayPanel, new Integer(1), 0);
+        //layeredPane.add(drawPanel, new Integer(0), 0);
+        //layeredPane.add(overlayPanel, new Integer(1), 0);
         label.setVisible(true);
         
 		
@@ -160,7 +160,7 @@ private int key;
 		drawPanel.setSize(new Dimension(1000,600));
 		drawPanel.setPreferredSize(new Dimension(1000,600));
 		
-		getContentPane().add(layeredPane);
+		getContentPane().add(drawPanel);
 		image=new BufferedImage(1000, 600, BufferedImage.TYPE_INT_ARGB);
 		drawPanel.setVisible(true);
 		//pack();

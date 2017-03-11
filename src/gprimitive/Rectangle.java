@@ -44,7 +44,7 @@ public class Rectangle extends Object3d {
 		}
 		else{
 			drawTriangle(c1, c2,addVertex(x1, y2, 0));
-			drawTriangle(c1, c2,addVertex(x2, y1,0));
+			drawTriangle(c2, c1,addVertex(x2, y1,0));
 		}
 		
 	}
