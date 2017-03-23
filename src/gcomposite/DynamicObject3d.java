@@ -4,21 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.IllegalFormatCodePointException;
 import java.util.Random;
-import java.util.Set;
-
-import com.sun.corba.se.impl.orb.NormalDataCollector;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import gcomposite.ObjReader.DataType;
 import gcore.Object3d;
 import gmath.Vector;
-
 public class DynamicObject3d extends Object3d {
 
 	ArrayList<double[]> vertex=new ArrayList<>();
@@ -36,7 +26,6 @@ public class DynamicObject3d extends Object3d {
 		ObjReader.DataType type=DataType.Vertex;
 		while((type=reader.readInitial())!=DataType.EndOfFile){
 			if(type==DataType.Vertex){
-				
 				vertex=reader.getVertex();
 				System.out.println("Vertex :("+vertex[0]+", "+vertex[1]+", "+vertex[2]+")");
 				this.vertex.add(vertex);
@@ -57,7 +46,17 @@ public class DynamicObject3d extends Object3d {
 		System.out.println("Size of vertex Array:"+this.vertex.size());
 		System.out.println("Size of normal Array:"+this.vertexNormal.size());
 		System.out.println("Size of triangle array:"+triangles.size());
-		try{Thread.sleep(1000);}catch(Exception e){}
+		
+		// now make normal consistent.
+		for (int[][] index : triangles) {
+			double[] normal=Vector.getTriangleNormal(this.vertex.get(index[0][0]),this.vertex.get(index[0][1]), this.vertex.get(index[0][2]));
+			double[] given_normal=this.vertexNormal.get(index[2][0]);
+			if((normal[0]*given_normal[0]+normal[0]*given_normal[0]+normal[0]*given_normal[0])<0){
+				int temp=index[0][0];
+				index[0][0]=index[0][2];
+				index[0][2]=temp;
+			}
+		}
 		
 		Random random=new Random();
 		color=new int[triangles.size()];

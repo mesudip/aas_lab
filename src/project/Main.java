@@ -28,26 +28,9 @@ public class Main {
 
 	
 	static Camera camera=Camera.getCamera();
-	
-	static public void _main(String[] args){
-		Object3d.noLog();
-		gcore.Display.initialize();
-		cube1=new FancyCube();
-		
-		cube1.transform.scale(100);
-		Camera.getCamera().setOrthoProjection(10, 200,100,200,50,100);;
-		Camera.getCamera().transform.moveTo(600, 600, 600);
-		Camera.getCamera().transform.setRotation(-600, -600, -600);
-		
-		for(int i=-1000;i<=1000;i+=20){
-			new Line(-1000,i,1000,i).setColor(0xff777700);
-			new Line(i,-1000,i,1000).setColor(0xff777700);
-		}
-		
-		
-	}
+
 	static public void onUpdate(){
-		object.transform.rotatez(1);
+	//	object.transform.rotatez(1);
 		
 	}
 	static public void main(String[] args){
@@ -55,33 +38,9 @@ public class Main {
 //			new Line(-1000,i,1000,i).setColor(0xff777700);
 //			new Line(i,-1000,i,1000).setColor(0xff777700);
 //		}
-//	
-	
-//		Triangle triangle=new Triangle(-1,-1,1,1,+1,+1,-1,1,1);
-//		triangle.setColor(0xffffff00);
-//		new Line(-1,-1,1,-1,1,1).setColor(0xff000000);
-//		new Line(-1,1,1,1,1,1).setColor(0xff000000);
-//		new Line(-1,-1,1,1,1,1).setColor(0xff000000);
-		
-		
-		//cube1=new Cube();
-		//new FancyCube().transform.scale(200);;
-//		cube1=new FancyCube();
-//		cube1.transform.scale(50);
-//		cube1=new FancyCube();
-//		cube1.transform.scale(40);
-//		cube1.transform.translate(0, 0, 500);
-//		new Cube().transform.scale(50);;
-		
-		//camera.transform.setRotation(-600,0,-50);
-		
-		
-		//cube1.transform.translate(100, 100,100);
-	//	cube1.transform.scale(100);
-		//cube1.transform.scale(100);
-		LightSource light=new LightSource();
-		
-		
+
+		LightSource light=new LightSource(1.0,0.0,0.0,1);
+
 		System.out.println("Working Directory = " +System.getProperty("user.dir"));
 		//Camera.getCamera().transform.translate(0, 0,500);
 		try{

@@ -26,6 +26,15 @@ public class Vector {
 		}
 		return val;
 	}
+	public static double[] getTriangleNormal(double[]v1,double[]v2,double[]v3){
+		double[] normal=new double[3];
+		
+		normal[0]=(v2[1]-v1[1])*(v3[2]-v1[2])-(v3[1]-v1[1])*(v2[2]-v1[2]);
+		normal[1]=(v2[2]-v1[2])*(v3[0]-v1[0])-(v2[0]-v1[0])*(v3[2]-v1[2]);
+		normal[2]=(v2[0]-v1[0])*(v3[1]-v1[1])-(v3[0]-v1[0])*(v2[1]-v1[1]);
+		return normal;
+	
+	}
 	
 	static public void printVector(float[] vector){
 		System.out.print("Vector :");
@@ -70,6 +79,12 @@ public class Vector {
 		return ret;
 	}
 	public static void makeUnit(double[] v){
+		double r= java.lang.Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+		v[0]/=r;
+		v[1]/=r;
+		v[2]/=r;
+	}
+	public static void makeUnit(float[] v){
 		double r= java.lang.Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
 		v[0]/=r;
 		v[1]/=r;

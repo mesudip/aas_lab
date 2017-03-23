@@ -7,6 +7,7 @@ import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStrea
 
 import gmath.Vector;
 import gprimitive.Triangle;
+import javafx.beans.property.FloatProperty;
 import jdk.nashorn.internal.runtime.linker.JavaAdapterFactory;
 import project.Main;
 import sun.security.x509.InvalidityDateExtension;
@@ -191,6 +192,20 @@ class TriangleRenderer{
 		}
 		System.out.println("The size of tri just before for  loop:"+tri.size());
 		int i=0;
+		int index=LightSource.getAllSources().get(0).front;
+		double lx=vertex.get(index++);
+		double ly=vertex.get(index++);
+		double lz=vertex.get(index);
+		
+		double r;
+		r=Math.sqrt(lx*lx+ly*ly+lz*lz);
+		lx/=r; ly/=r; lz/=r;
+		
+		double[] direction=LightSource.getAllSources().get(0).direction;
+		float[] light_direction=Camera.getCamera().transform.getRotatedVector((float)(direction[0]),(float)(direction[1]),(float)(direction[2]));
+		Vector.makeUnit(light_direction);
+		lx=light_direction[0];ly=light_direction[1];lz=light_direction[2];
+		
 		for(;i<tri.size();){
 			System.out.println("Procesing tri :"+i);
 			color=triColor.get(i/3);
@@ -216,39 +231,30 @@ class TriangleRenderer{
 			z=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
 			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
 			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
-			
-			double r=Math.sqrt(z*z+dz1*dz1+dz2*dz2);
-			
+			r=Math.sqrt(z*z+dz1*dz1+dz2*dz2);
 			z/=r;dz1/=r;dz2/=r;
-			
-			int index=LightSource.getAllSources().get(0).front;
-			double lx=vertex.get(index++);
-			double ly=vertex.get(index++);
-			double lz=vertex.get(index);
-			r=Math.sqrt(lx*lx+ly*ly+lz*lz);
-			lx/=r; ly/=r; lz/=r;
+
 			
 			double nl= Vector.dotProduct(2*z, 2*dz1, 2*dz2, lx, ly, lz);
 			double refx=nl*z-lx;
 			double refy=nl*dz1-ly;
 			double refz=nl*dz2-lz;
-			java.lang.System.out.println("Light direction"+lx+ly+lz);
-			
 			// this is intensity for specular reflection
-			double intensityS=Math.pow(Vector.dotProduct(0,0,-1,refx,refy,refz),5);
-		
+			double intensityS=Math.pow(Vector.dotProduct(0,0,-1,refx,refy,refz),2);
 			//this is intensity for diffuse reflection
-		//	double intensityD=Vector.dotProduct(z,dz1,dz2,lx,ly,lz);
-		//	double intensity=intensityD;
-		//	if(intensityD>0.5)
-		//		intensity+=intensityS;
-		//	
-		//	if(intensity<0)
-		//		intensity=0;
-		int color ;
-		color=((int)intensityS*150);
-			color=((255<<24)+(color<<16)+(color<<8)+color);
+			double intensityD=Vector.dotProduct(z,dz1,dz2,lx,ly,lz);
+			//double intensity=intensityD;
+			double intensity=intensityD;
+			if(intensity>1)
+				intensity=1;
 			
+			if(intensity<0)
+				intensity=0;
+		int color ;
+		
+		color=((int)(intensity*255));
+			//color=((255<<24)+(color<<16)+(color<<8)+color);
+			color=(0xffffffff-(color<<16)-(color<<8)-color);
 			display.setColor(color);
 
 			if(y2>y3){
