@@ -1,8 +1,16 @@
 package gcore;
 import java.io.PrintStream;
 import java.lang.Math;
+import java.nio.DoubleBuffer;
 
+import com.oracle.xmlns.internal.webservices.jaxws_databinding.JavaMethod;
+import com.sun.media.jfxmedia.control.VideoRenderControl;
+
+import gmath.Vector;
 import gprimitive.Triangle;
+import jdk.nashorn.internal.runtime.linker.JavaAdapterFactory;
+import project.Main;
+import sun.security.x509.InvalidityDateExtension;
 public class PrimitiveRender {
 	/**
 	 * 
@@ -61,6 +69,7 @@ class TriangleRenderer{
 	}
 	public void _rasterize(){
 		int i1;
+		
 		for(int color:triColor){
 			//System.out.print(", "+Integer.valueOf(i1))
 		}
@@ -204,7 +213,43 @@ class TriangleRenderer{
 			if((x2-x1)*(y3-y1)-(x3-x1)*(y2-y1)>=0){
 				continue;
 			}
-
+			
+			z=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
+			dz1=(z2-z1)*(x3-x1)-(x2-x1)*(z3-z1);
+			dz2=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+			
+			double r=Math.sqrt(z*z+dz1*dz1+dz2*dz2);
+			
+			z/=r;dz1/=r;dz2/=r;
+			
+			int index=LightSource.getAllSources().get(0).front;
+			double lx=vertex.get(index++);
+			double ly=vertex.get(index++);
+			double lz=vertex.get(index);
+			r=Math.sqrt(lx*lx+ly*ly+lz*lz);
+			lx/=r; ly/=r; lz/=r;
+			
+			double nl= Vector.dotProduct(2*z, 2*dz1, 2*dz2, lx, ly, lz);
+			double refx=nl*z-lx;
+			double refy=nl*dz1-ly;
+			double refz=nl*dz2-lz;
+			java.lang.System.out.println("Light direction"+lx+ly+lz);
+			
+			// this is intensity for specular reflection
+			double intensityS=Math.pow(Vector.dotProduct(0,0,-1,refx,refy,refz),5);
+		
+			//this is intensity for diffuse reflection
+		//	double intensityD=Vector.dotProduct(z,dz1,dz2,lx,ly,lz);
+		//	double intensity=intensityD;
+		//	if(intensityD>0.5)
+		//		intensity+=intensityS;
+		//	
+		//	if(intensity<0)
+		//		intensity=0;
+		int color ;
+		color=((int)intensityS*150);
+			color=((255<<24)+(color<<16)+(color<<8)+color);
+			
 			display.setColor(color);
 
 			if(y2>y3){
@@ -254,6 +299,8 @@ class TriangleRenderer{
 	void renderFlatTriangle(int x1,int y1,float z1,int x2,float z2, int x3,int y3, float z3){
 		//System.out.println("  Flat Triangle Rasterization :("+x1+", "+y1+"), ("+x2+", "+y1+"), ("+x3+", "+y3+")");
 		//we have arranged the coordinates as: y3,y1=y2;
+		
+		
 		dx1=x3-x1;
 		dx2=x3-x2;
 		dz1=z3-z1;
@@ -557,6 +604,7 @@ class TriangleRenderer{
 
 	}
 	private void accurateTriangleRenderer2_2(){
+
 		if(dx2>dy2){// case 2nd line's sampling is along x axis
 			System.out.println("Internal Renderer 2_2_dx2>dy2");
 			p2=dy2-dx2;
@@ -648,7 +696,10 @@ class LineRenderer{
 			z2=vertex.get(j);
 			 //System.out.println("Coord  ("+String.valueOf(x1)+", "+String.valueOf(y1)+") to ("+String.valueOf(x2)+", "+String.valueOf(y2)+")");
 			 //try{Thread.sleep(2000);}catch(Exception e){}
+			
+			
 			display.setColor(lineColor.get(i/2));
+			
 			dx=x2-x1;
 			dy=y2-y1;
 			

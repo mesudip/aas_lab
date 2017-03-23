@@ -5,6 +5,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import gmath.Transform;
 import gprimitive.Line;
 public abstract class Object3d extends Object implements Drawable{
@@ -204,6 +206,19 @@ public abstract class Object3d extends Object implements Drawable{
 			}
 		}
 		Camera.getCamera().applyTransforms(vertex);
+		for (LightSource light : LightSource.getAllSources()) {
+			light.transform.getFrontVector();
+			light.front=vertex.size();
+			double[] front=light.transform.getFrontVector();
+			
+			vertex.add((float)front[0]);
+			vertex.add((float)front[1]);
+			vertex.add((float)front[2]);
+			vertex.add((float)1);
+			
+			Camera.getCamera().applyTransforms(vertex.subList(light.front, vertex.size()));
+			
+		}
 		System.out.println();
 		System.out.println("Total registered vertices :"+vertex.size());
 		printVertices();

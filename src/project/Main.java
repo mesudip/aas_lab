@@ -5,6 +5,7 @@ import gmath.Vector;
 import gcomposite.DynamicObject3d;
 import gcomposite.FancyCube;
 import gcore.Camera;
+import gcore.LightSource;
 import gcore.Object3d;
 import gprimitive.*;
 
@@ -23,6 +24,9 @@ public class Main {
 		Object3d.noLog();
 		Camera camera=Camera.getCamera();
 	}
+	
+
+	
 	static Camera camera=Camera.getCamera();
 	
 	static public void _main(String[] args){
@@ -43,6 +47,7 @@ public class Main {
 		
 	}
 	static public void onUpdate(){
+		object.transform.rotatez(1);
 		
 	}
 	static public void main(String[] args){
@@ -74,6 +79,7 @@ public class Main {
 		//cube1.transform.translate(100, 100,100);
 	//	cube1.transform.scale(100);
 		//cube1.transform.scale(100);
+		LightSource light=new LightSource();
 		
 		
 		System.out.println("Working Directory = " +System.getProperty("user.dir"));
