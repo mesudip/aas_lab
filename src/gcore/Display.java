@@ -219,6 +219,9 @@ private int key;
 				zbuffer[i][j]=Float.POSITIVE_INFINITY;
 			}
 		}
+		Graphics graphics=buffer.getGraphics();
+		graphics.setColor(Color.darkGray	);
+		graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 		Main.onUpdate();
 		Object3d.render(buffer.getWidth(),buffer.getHeight());
 		

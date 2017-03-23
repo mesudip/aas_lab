@@ -3,8 +3,7 @@ import java.io.PrintStream;
 import java.lang.Math;
 import java.nio.DoubleBuffer;
 
-import com.oracle.xmlns.internal.webservices.jaxws_databinding.JavaMethod;
-import com.sun.media.jfxmedia.control.VideoRenderControl;
+import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
 
 import gmath.Vector;
 import gprimitive.Triangle;

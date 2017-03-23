@@ -4,26 +4,33 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.IllegalFormatCodePointException;
 import java.util.Random;
+import java.util.Set;
 
+import com.sun.corba.se.impl.orb.NormalDataCollector;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import gcomposite.ObjReader.DataType;
 import gcore.Object3d;
+import gmath.Vector;
 
 public class DynamicObject3d extends Object3d {
 
 	ArrayList<double[]> vertex=new ArrayList<>();
-	ArrayList<int[]> edge=new ArrayList<>();
-	
+	///ArrayList<int[][]> edge=new ArrayList<>();
+	ArrayList<double[]> vertexNormal=new ArrayList<>();
+	ArrayList<int[]> triangularFaces=new ArrayList<>();
 	int[] color=null;
 	
-	ArrayList <int[]> triangles=new ArrayList<>();
-	
 	public DynamicObject3d (File _file)throws FileNotFoundException,IOException{
+		ArrayList <int[][]> triangles=new ArrayList<>();
 		double[] vertex;
-		int[] edge;
+		int[][] edge;
 		
 		ObjReader reader =new ObjReader(_file);
 		ObjReader.DataType type=DataType.Vertex;
@@ -37,23 +44,60 @@ public class DynamicObject3d extends Object3d {
 			else if(type==DataType.Face){
 				edge=reader.getFace();
 				System.out.println("Face: ("+edge[0]+", "+edge[1]+", "+edge[2]+")");
-				this.triangles.add(edge);
+				triangles.add(edge);
 			}
+			else if(type==DataType.VertexNormal){
+				vertex=reader.getVertexNormal();
+				System.out.println("Vertex Normal:("+vertex[0]+", "+vertex[1]+", "+vertex[2]+")");
+				vertexNormal.add(vertex);
+			}	
 		}
 		reader.close();
+		
+		System.out.println("Size of vertex Array:"+this.vertex.size());
+		System.out.println("Size of normal Array:"+this.vertexNormal.size());
+		System.out.println("Size of triangle array:"+triangles.size());
+		try{Thread.sleep(1000);}catch(Exception e){}
+		
 		Random random=new Random();
-		color=new int[this.triangles.size()];
+		color=new int[triangles.size()];
 		for(int i=0;i<triangles.size();i++){
 			color[i]=0xff000000+random.nextInt()%0xffffff;
 			
+		}
+		double[][] averege_vertex_noral=new double[this.vertexNormal.size()][3];
+		for (int[][] index : triangles) {
+			
+				if(averege_vertex_noral[index[2][0]]!=null){
+				averege_vertex_noral[index[2][0]][0]+=this.vertexNormal.get(index[2][0])[0];
+				averege_vertex_noral[index[2][0]][1]+=this.vertexNormal.get(index[2][0])[1];
+				averege_vertex_noral[index[2][0]][2]+=this.vertexNormal.get(index[2][0])[2];
+			}
+			else{
+				double[] new_normal=new double[3];
+				new_normal[0]=this.vertexNormal.get(index[2][0])[0];
+				new_normal[1]=this.vertexNormal.get(index[2][0])[1];
+				new_normal[2]=this.vertexNormal.get(index[2][0])[2];
+				averege_vertex_noral[index[2][0]]=new_normal;
+			}
+		}
+		
+		this.vertexNormal=new ArrayList<double[]>();
+		
+		java.util.Collections.addAll(vertexNormal,averege_vertex_noral);
+		
+		System.out.println("the output normal values for each vertex are :");
+		for (double[] vector : averege_vertex_noral) {
+			Vector.printVector(vector);
+		}
+		for (int[][] index : triangles) {
+			triangularFaces.add(index[0]);
 		}
 	}
 	@Override
 	public void draw() {
 		int offset=addVertex3(vertex.toArray(new double[0][0]));
-		drawTriangle(triangles.toArray(new int[0][0]),color,offset);
-		
-
-	}
+		drawTriangle(triangularFaces.toArray(new int[0][0]),color,offset);
+			}
 
 }

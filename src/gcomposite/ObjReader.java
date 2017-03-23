@@ -36,12 +36,15 @@ public class ObjReader extends DataInputStream {
 				return DataType.EndOfFile;
 			word+=(char)_read;
 		}
+		System.out.println("Read initial is:"+word);
 		if(word.equals("v")){
 			return DataType.Vertex;
 		}
 		else if(word.equals("f")){
 			return DataType.Face;
-			
+		}
+		else if(word.equals("vn")){
+			return DataType.VertexNormal;
 		}
 		readLine();
 		return DataType.Unknown;
@@ -57,13 +60,37 @@ public class ObjReader extends DataInputStream {
 		return vertex;
 	}
 	
-	int[] getFace() throws IOException{
+	int[][] getFace() throws IOException{
 		String line=readLine();
 		String[] numbers=line.split("\\s");
-		int[] face=new int[3];
-		face[0]=Integer.valueOf(numbers[0].trim().split("\\/")[0])-1;
-		face[1]=Integer.valueOf(numbers[1].trim().split("\\/")[0])-1;
-		face[2]=Integer.valueOf(numbers[2].trim().split("\\/")[0])-1;
+		int[][] face=new int[3][3];
+		String[] indices;
+		
+		indices=numbers[0].trim().split("\\/");
+		face[0][0]=Integer.valueOf(indices[0])-1;
+		face[1][0]=Integer.valueOf(indices[1])-1;
+		face[2][0]=Integer.valueOf(indices[2])-1;
+		
+		indices=numbers[1].trim().split("\\/");
+		face[0][1]=Integer.valueOf(indices[0])-1;
+		face[1][1]=Integer.valueOf(indices[1])-1;
+		face[1][2]=Integer.valueOf(indices[2])-1;		
+		
+		indices=numbers[2].trim().split("\\/");
+		face[0][2]=Integer.valueOf(indices[0])-1;
+		face[1][2]=Integer.valueOf(indices[1])-1;
+		face[2][2]=Integer.valueOf(indices[2])-1;
 		return face;
 	}
+	public double[] getVertexNormal() throws IOException{
+		String line=readLine();
+		
+		String[] numbers=line.split("\\s");
+		double[] vertexNormal=new double[3];
+		vertexNormal[0]=Double.valueOf(numbers[0].trim());
+		vertexNormal[1]=Double.valueOf(numbers[1].trim());
+		vertexNormal[2]=Double.valueOf(numbers[2].trim());
+		return vertexNormal;
+	}
 }
+						
